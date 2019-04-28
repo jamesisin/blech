@@ -39,14 +39,14 @@ def func_getUserInput():
 	print( "" ) 
 	while True: 
 		try: 
-			dieMax = int( input( "How many sides on the dice?  " ) ) 
+			dieMax = int( input( "How many sides on the dice (blank accepts {})?  ".format( dieMax ) ) or dieMax ) 
 		except ValueError: 
 			print( "You can only use integers for this value.  " ) 
 		else: 
 			break 
 	while True: 
 		try: 
-			totalRolls = int( input( "How many rolls for each pair?  " ) ) 
+			totalRolls = int( input( "How many rolls for each pair (blank accepts {})?  ".format( totalRolls ) ) or totalRolls ) 
 		except ValueError: 
 			print( "You can only use integers for this value.  " ) 
 		else: 
