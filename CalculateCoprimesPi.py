@@ -103,7 +103,7 @@ def func_calculateCoprime():
 def func_calculatePi(): 
 	"""Calculate pi based on ratio of coprimes.  """ 
 	global piEstimate 
-	piEstimate = sqrt(6/(countCoprime/totalRolls)) 
+	piEstimate = sqrt( 6/( countCoprime/totalRolls ) ) 
 
 def func_calculatePiAccuracy(): 
 	"""Compare calulated pi with actual pi.  """ 
@@ -119,7 +119,7 @@ def func_calculatePiAccuracy():
 	print( "That's only {0}% off!  ".format( piRatio ) ) 
 	print( "" ) 
 
-def main (): 
+def main(): 
 	"""Do all the business!  """ 
 	func_getUserInput() 
 	func_loopRollingDice() 
