@@ -2,7 +2,7 @@
 # Title   :  StringReplacement.sh 
 # Author  :  JamesIsIn 20190603 Do something nice today. 
 
-# Purpose :   
+# Purpose :  Rename files by string substitution based on user input and supplied file extension.  
 # 
 
 ## 
