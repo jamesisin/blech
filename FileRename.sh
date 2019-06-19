@@ -70,7 +70,6 @@ function func_testReplacement() {
 function func_testReplacementLoop() { 
 	# loop through tests 
 	while [ ! "${proceed}" == y ] ; do  # something 
-		
 		func_getFileExtension 
 		func_getStringSearch 
 		func_getStringReplacement 
