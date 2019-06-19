@@ -27,20 +27,22 @@ declare proceed
 
 function func_getContainingFolder() { 
 	# obtain directory in which to work 
-	printf '%s\n' "Hello.  " "" 
-	read -rep "Please provide the containing folder for the files to be renamed:  " -i "${containingFolderPath}" containingFolderPath 
-	# expand the ~/ if it gets submitted 
-	containingFolderPath="${containingFolderPath/#~/${HOME}}" 
-	# fix spaces to be used in a quoted variable 
-	containingFolderPath="${containingFolderPath//\\ / }" 
-	if [ -d "${containingFolderPath}" ] ; then 
-		printf '%s\n' "I have confirmed this is a directory.  " 
-		printf '%s\n' "${containingFolderPath}" "" 
-	else 
-		printf '%s\n' "I cannot confirm this is a directory.  " 
-		printf '%s\n' "${containingFolderPath}" "" 
-		exit 1 
-	fi 
+	printf '%s\n' "" "Hello.  " "" 
+	printf '%s\n' "Crtl-c at any time abandons any changes and exits the script.  " "" 
+	while [ ! -d "${containingFolderPath}" ] ; do 
+		read -rep "Please provide the containing folder for the files to be renamed:  " -i "${containingFolderPath}" containingFolderPath 
+		# expand the ~/ if it gets submitted 
+		containingFolderPath="${containingFolderPath/#~/${HOME}}" 
+		# fix spaces to be used in a quoted variable 
+		containingFolderPath="${containingFolderPath//\\ / }" 
+		if [ -d "${containingFolderPath}" ] ; then 
+			printf '%s\n' "I have confirmed this is a directory.  " 
+			printf '%s\n' "${containingFolderPath}" "" 
+		else 
+			printf '%s\n' "I cannot confirm this is a directory.  " 
+			printf '%s\n' "${containingFolderPath}" "" 
+		fi 
+	done 
 } 
 
 function func_getFileExtension() { 
@@ -68,7 +70,7 @@ function func_testReplacement() {
 function func_testReplacementLoop() { 
 	# loop through tests 
 	while [ ! "${proceed}" == y ] ; do  # something 
-		printf '%s\n' "Crtl-c at any time abandons any changes and exits the script.  " "" 
+		
 		func_getFileExtension 
 		func_getStringSearch 
 		func_getStringReplacement 
