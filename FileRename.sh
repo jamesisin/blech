@@ -13,10 +13,11 @@
 declare containingFolderPath="${1}" 
 declare filename 
 declare fileExtension 
+	fileExtension="." 
 declare StringSearch 
-	StringSearch=" - " 
+	StringSearch="-" 
 declare StringReplacement 
-	StringReplacement=" – " 
+	StringReplacement="–" 
 declare proceed 
 	proceed="n" 
 
@@ -34,7 +35,7 @@ function func_getContainingFolder() {
 		# expand the ~/ if it gets submitted 
 		containingFolderPath="${containingFolderPath/#~/${HOME}}" 
 		# fix spaces to be used in a quoted variable 
-		containingFolderPath="${containingFolderPath//\\ / }" 
+		containingFolderPath="${containingFolderPath//\\/}" 
 		if [ -d "${containingFolderPath}" ] ; then 
 			printf '%s\n' "I have confirmed this is a directory.  " 
 			printf '%s\n' "${containingFolderPath}" "" 
@@ -57,32 +58,33 @@ function func_getStringSearch() {
 
 function func_getStringReplacement() { 
 	# ask the user for the string to insert as replacement 
+	printf '%s\n' "(Some initial characters may require an escape.)  " 
 	read -rep "With what shall we replace that string?  " -i "${StringReplacement}" StringReplacement 
 } 
 
 function func_testReplacement() { 
 	# emulate name change for user evaluation 
-	for filename in "${containingFolderPath}"*."${fileExtension}" ; do 
-		printf '%s\n' "$filename --> ${filename/${StringSearch}/${StringReplacement}}" 
+	for filename in "${containingFolderPath}"*"${fileExtension}" ; do 
+		printf '%b\n' "$filename --> \n${filename/${StringSearch}/${StringReplacement}}" "" 
 	done 
 } 
 
 function func_testReplacementLoop() { 
 	# loop through tests 
-	while [ ! "${proceed}" == y ] ; do  # something 
+	while [ ! "${proceed}" == y ] ; do # something 
 		func_getFileExtension 
 		func_getStringSearch 
 		func_getStringReplacement 
 		func_testReplacement 
 		# ask user if test was ok 
-		read -rp "Shall we proceed with this change?  (y|N)  " -n1  proceed 
+		read -rp "Shall we proceed with this change?  (y|N)  " -n1 proceed 
 		printf "\n" 
 	done 
 } 
 
 function func_performReplacement() { 
 	# currently this is the original script version of the replacement 
-	for filename in "${containingFolderPath}"*."${fileExtension}" ; do 
+	for filename in "${containingFolderPath}"*"${fileExtension}" ; do 
 		mv "$filename" "${filename/${StringSearch}/${StringReplacement}}" 
 		printf '%s\n' "${filename} changed " 
 	done 
