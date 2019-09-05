@@ -30,11 +30,12 @@ function func_getContainingFolder() {
 	# obtain directory in which to work 
 	printf '%s\n' "" "Hello.  " "" 
 	printf '%s\n' "Crtl-c at any time abandons any changes and exits the script.  " "" 
+	read -rep "Please provide the containing folder for the files to be renamed:  " -i "${containingFolderPath}" containingFolderPath 
 	while [ ! -d "${containingFolderPath}" ] ; do 
 		read -rep "Please provide the containing folder for the files to be renamed:  " -i "${containingFolderPath}" containingFolderPath 
 		# expand the ~/ if it gets submitted 
 		containingFolderPath="${containingFolderPath/#~/${HOME}}" 
-		# fix spaces to be used in a quoted variable 
+		# fix escaped characters to be used in a quoted variable 
 		containingFolderPath="${containingFolderPath//\\/}" 
 		if [ -d "${containingFolderPath}" ] ; then 
 			printf '%s\n' "I have confirmed this is a directory.  " 
