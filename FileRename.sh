@@ -1,6 +1,6 @@
 #! /usr/bin/env bash 
 # Title   :  FileRename.sh 
-# Author  :  JamesIsIn 20190603 Do something nice today. 
+# Author  :  JamesIsIn 20191010 Do something nice today. 
 
 # Purpose :  Rename files by string substitution based on user input and supplied file extension.  
 # 
