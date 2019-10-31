@@ -32,6 +32,9 @@ declare -a files_syncDestination
 #  Functions  # 
 
 # ToDo:  
+# 
+# add test for playlist entries paths are in music library path 
+# 
 # how to get anotherPlaylist working in the loop?  
 # 
 # split paths into root part and path part so substitutions only happen to path part # done 
@@ -105,7 +108,6 @@ function func_getPlaylistLoop() {
 
 function func_getMusicLibraryRoot() { 
 	# do I need this if the playlist has paths?  
-	# obtain directory in which to work 
 	read -rep "Please provide the root directory for your music library:  " -i "${directory_MusicLibraryRoot_source}" directory_MusicLibraryRoot_source 
 	# expand the ~/ if it gets submitted 
 	directory_MusicLibraryRoot_source="${directory_MusicLibraryRoot_source/#~/${HOME}}" 
@@ -127,7 +129,6 @@ function func_getMusicLibraryRootLoop() {
 } 
 
 function func_getPMPRoot() { 
-	# obtain directory in which to work 
 	read -rep "Please provide the root directory for your music player:  " -i "${directory_PMPRoot_destination}" directory_PMPRoot_destination 
 	# expand the ~/ if it gets submitted 
 	directory_PMPRoot_destination="${directory_PMPRoot_destination/#~/${HOME}}" 
@@ -158,10 +159,9 @@ function func_PMP_naughtyFilesystem() {
 } 
 
 function func_parsePlaylist() { 
-	# 
 	readarray -t files_syncSource <<< "$( grep -v '^#' "${playlistPath}" )" 
 	printf '%s\n' "" "Playlist:  ${playlistName}  " 
-	printf '%s\n' "Track count:  ${#files_syncSource[@]} " "" # number of tracks 
+	printf '%s\n' "Track count:  ${#files_syncSource[@]} " "" 
 	# useful for debugging:  
 	# for (( i = 0 ; i < ${#files_syncSource[@]} ; i++ )) ; do 
 	# 	printf '%s\n' "${files_syncSource[${i}]}" # path to each track 
@@ -177,10 +177,6 @@ function func_CreateSourceAndDestination() {
 	for (( i = 0 ; i < ${#files_syncSource[@]} ; i++ )) ; do 
 		files_syncDestination[${i}]="${files_syncSource[${i}]#${directory_MusicLibraryRoot_source}}" 
 		# printf '%s\n' "${files_syncDestination[${i}]}" # useful in debugging 
-		# printf '%s\n' "files_syncDestination is ${files_syncDestination[${i}]}" 
-		# printf '%s\n' "directory_MusicLibraryRoot_source is ${directory_MusicLibraryRoot_source}" 
-		# printf '%s\n' "directory_PMPRoot_destination is ${directory_PMPRoot_destination}" 
-		# exit 
 		if [ "${naughtyFilesystem}" != "n" ] ; then 
 			files_syncDestination[${i}]="${files_syncDestination[${i}]//\:/__}" 
 			files_syncDestination[${i}]="${files_syncDestination[${i}]//\?/__}" 
