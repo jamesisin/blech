@@ -1,6 +1,6 @@
 #! /usr/bin/env bash 
 # Title   :  FileRename.sh 
-# Author  :  JamesIsIn 20191010 Do something nice today. 
+# Author  :  JamesIsIn 20190603 Do something nice today. 
 
 # Purpose :  Rename files by string substitution based on user input and supplied file extension.  
 # 
@@ -15,9 +15,9 @@ declare filename
 declare fileExtension 
 	fileExtension="." 
 declare StringSearch 
-	StringSearch=' - ' 
+	StringSearch=' _ ' 
 declare StringReplacement 
-	StringReplacement=' – ' 
+	StringReplacement=' - ' 
 declare proceed 
 	proceed="n" 
 
@@ -55,19 +55,26 @@ function func_getFileExtension() {
 
 function func_getStringSearch() { 
 	# ask the user for the string to be replaced 
-	read -rep "What is the string found in the file which will be replaced?  " -i "${StringSearch}" StringSearch 
+	printf '%s\n' "(Certain characters may require an escape.)  " 
+	oldIFS="${IFS}" && IFS='' 
+	read -rep "What is the string which will be replaced?  " -i "${StringSearch}" StringSearch 
+	printf '%s\n' "	\"${StringSearch}\"" 
+	IFS="${oldIFS}" 
 } 
 
 function func_getStringReplacement() { 
 	# ask the user for the string to insert as replacement 
-	printf '%s\n' "(Some initial characters may require an escape.)  " 
+	oldIFS="${IFS}" && IFS='' 
 	read -rep "With what shall we replace that string?  " -i "${StringReplacement}" StringReplacement 
+	printf '%s\n' "	\"${StringReplacement}\"" 
+	IFS="${oldIFS}" 
 } 
 
 function func_testReplacement() { 
 	# emulate name change for user evaluation 
-	for filename in "${containingFolderPath}"*"${fileExtension}" ; do 
-		printf '%b\n' "$filename --> \n${filename/${StringSearch}/${StringReplacement}}" "" 
+	cd "${containingFolderPath}" 
+	for filename in *"${fileExtension}" ; do 
+		printf '%b\n' "$filename  →  " "${filename/${StringSearch}/${StringReplacement}}" "" 
 	done 
 } 
 
@@ -79,6 +86,7 @@ function func_testReplacementLoop() {
 		func_getStringReplacement 
 		func_testReplacement 
 		# ask user if test was ok 
+		printf '%s\n' "	\"${StringSearch}\"  →  \"${StringReplacement}\"" 
 		read -rp "Shall we proceed with this change?  (y|N)  " -n1 proceed 
 		printf "\n" 
 	done 
@@ -86,9 +94,12 @@ function func_testReplacementLoop() {
 
 function func_performReplacement() { 
 	# currently this is the original script version of the replacement 
-	for filename in "${containingFolderPath}"*"${fileExtension}" ; do 
-		mv "$filename" "${filename/${StringSearch}/${StringReplacement}}" 
-		printf '%s\n' "${filename} changed " 
+	for filename in *"${fileExtension}" ; do 
+		if mv "$filename" "${filename/${StringSearch}/${StringReplacement}}"  ; then 
+			printf '%s\n' "	${filename} changed " "" 
+		else 
+			printf '%s\n' 
+		fi 
 	done 
 } 
 
