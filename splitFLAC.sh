@@ -31,8 +31,9 @@ function func_EnterToContinue() {
 
 function func_getContainingFolder() { 
 	# obtain directory in which to work 
-	printf '%s\n' "Hello.  " "" 
+	printf '%s\n' "" "========================================" "" "Hello.  " "" 
 	printf '%s\n' "Crtl-c at any time abandons any changes and exits the script.  " "" 
+	func_EnterToContinue 
 	while [ ! -d "${containingFolderPath}" ] ; do 
 		read -rep "Please provide the containing folder for the files to be renamed:  " -i "${containingFolderPath}" containingFolderPath 
 		# expand the ~/ if it gets submitted 
@@ -75,8 +76,7 @@ function func_splitFilesAndHideOriginals() {
 	for (( i=0 ; i < ${#albumfind[@]} ; i++ )) ; do 
 		# path is cue iteration less file name 
 		albumfolder="${cuefind[i]%/*.*}" 
-		shnsplit -d "$albumfolder" -o flac -f "${cuefind[i]}" -t "$trackname" "${albumfind[i]}" ; 
-		mv "${albumfind[i]}" "${albumfind[i]}".hideme ; 
+		shnsplit -d "$albumfolder" -o flac -f "${cuefind[i]}" -t "$trackname" "${albumfind[i]}" && mv "${albumfind[i]}" "${albumfind[i]}".hideme ; 
 	done 
 } 
 
@@ -93,8 +93,7 @@ function func_tagSplitFiles() {
 	for (( i=0 ; i < ${#cuefind[@]} ; i++ )) ; do 
 		# path is cue iteration less file name 
 		albumfolder="${cuefind[i]%/*.*}" 
-		cuetag "${cuefind[i]}" "$albumfolder"\/*.flac 
-		mv "${cuefind[i]}" "${cuefind[i]}".hideme ; 
+		cuetag "${cuefind[i]}" "$albumfolder"\/*.flac && mv "${cuefind[i]}" "${cuefind[i]}".hideme ; 
 	done 
 } 
 
@@ -113,7 +112,7 @@ function func_PerformCleanup() {
 
 function func_revertSourceFiles() { 
 	# revert used files and exit 
-	func_locateSourceFiles
+	func_locateSourceFiles 
 	for (( i=0 ; i < ${#hidemes[@]} ; i++ )) ; do 
 		mv "${hidemes[i]}" "${hidemes[i]/\.hideme/}" ; 
 	done 
@@ -123,12 +122,18 @@ function func_confirmCueRatio() {
 	# follow array counts 
 	printf '%s\n' "" "Counts are as follows:  There are ${#albumfind[@]} albums and ${#cuefind[@]} cues.  " 
 	if ! [ "${#albumfind[@]}" == "${#cuefind[@]}" ] ; then 
-		printf '%s\n' "Your albums ought to equal your cues.  " 
-		printf '%s\n' "If these counts are not as expected, please inspect the contents of the folder you provided before proceding (or select a different folder) and re-run the script.  " "" 
+		printf '%s\n' "Your albums ought to equal your cues.  " "" 
+		printf '%s\n' "Are these counts different than expected?  " 
+		printf '%s\n' "	Please inspect the containing folders.  " 
+		printf '%s\n' "	(Or select a different folder.)  " 
+		printf '%s\n' "	Then re-run the script.  " "" 
 		exit 255 
 	fi 
-	printf '%s\n' "Your albums equal your cues.  That's great!  " 
-	printf '%s\n' "If these counts are not as expected, please inspect the contents of the folder you provided before proceding (or select a different folder) and re-run the script.  " "" 
+	printf '%s\n' "Your albums equal your cues.  That's great!  " "" 
+	printf '%s\n' "Are these counts different than expected?  " 
+	printf '%s\n' "	Please ctrl-c and inspect the containing folders.  " 
+	printf '%s\n' "	(Or select a different folder.)  " 
+	printf '%s\n' "	Then re-run the script.  " "" 
 	func_EnterToContinue 
 } 
 
@@ -144,13 +149,10 @@ function func_confirmDeleteSourceFiles() {
 		printf '%s\n' "(Q)uit this script leaving all used files with a .hideme extension.  " 
 		printf '%s\n' "(R)evert the used files and exit this script.  " "" 
 		read -rp "Choose d or q or r:  " -n1 
+		[[ "${REPLY}" == "q" ]] && ( printf '\n' ; exit 0 ) 
+		[[ "${REPLY}" == "r" ]] && ( func_revertSourceFiles ; printf '\n' ) 
+		[[ "${REPLY}" == "d" ]] && ( func_PerformCleanup ; printf '\n' ) 
 	done 
-	[[ "${REPLY}" == "q" ]] && printf '\n' ; exit 0 
-	if [ "${REPLY}" == "r" ] ; then 
-		func_revertSourceFiles && printf '\n' ; exit 0 
-	else 
-		func_PerformCleanup 
-	fi 
 } 
 
 function main() { 
@@ -172,7 +174,6 @@ function main() {
 #  main  # 
 
 main 
-
 exit $? 
 
 ## 
