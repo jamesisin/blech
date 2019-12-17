@@ -1,9 +1,9 @@
 #! /usr/bin/env bash 
-# Title   :  PMPSync.sh 
-# Parent  :  NONE 
-# Author  :  JamesIsIn 20190920 Do something nice today.  
+# Title  :  PMPSync.sh 
+# Parent :  NONE 
+# Author :  JamesIsIn 20190920 Do something nice today.  
 
-# Purpose :  Synchronize tracks from Library to PMP per playlists.  
+# Purpose:  Synchronize tracks from Library to PMP per playlists.  
 # 
 
 ## 
@@ -11,6 +11,7 @@
 ############### 
 #  Variables  # 
 
+# declare scriptUser_linux 
 declare playlistPath 
 	playlistPath="${1}" 
 declare directory_MusicLibraryRoot_source 
@@ -42,14 +43,15 @@ declare -a files_syncDestination
 
 function func_GetCurrentUser() { 
 	if [[ ! "${USER}" == root ]] ; then 
-		scriptUser_linux="${USER}" 
+		return 0 
+		# scriptUser_linux="${USER}" 
 	elif [[ "${USER}" == root ]] ; then # check if some naughty monster is logged in as root 
 		if [[ "${SUDO_USER}" == "" ]] ; then # sudo is ok 
 			printf '%s\n' "" "It is a bad practice to log in as root.  " 
 			printf '%s\n' "Log in as yourself and use sudo if necessary.  " "" 
 			exit 0 
 		fi 
-		scriptUser_linux="${SUDO_USER}" 
+		# scriptUser_linux="${SUDO_USER}" 
 	fi 
 } 
 
