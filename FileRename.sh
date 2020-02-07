@@ -17,7 +17,7 @@ declare fileExtension
 declare StringSearch 
 	StringSearch=' _ ' 
 declare StringReplacement 
-	StringReplacement=' - ' 
+	StringReplacement=' – ' 
 declare proceed 
 	proceed="n" 
 
@@ -25,6 +25,11 @@ declare proceed
 
 ############### 
 #  Functions  # 
+
+function func_intro() { 
+	printf '%s\n' "" "Hello.  " "" 
+	printf '%s\n' "Crtl-c at any time abandons any changes and exits the script.  " "" 
+} 
 
 function func_getContainingFolder() { 
 	read -rep "Please provide the containing folder for the files to be renamed:  " -i "${containingFolderPath}" containingFolderPath 
@@ -58,7 +63,7 @@ function func_getStringSearch() {
 	printf '%s\n' "(Certain characters may require an escape.)  " 
 	oldIFS="${IFS}" && IFS='' 
 	read -rep "What is the string which will be replaced?  " -i "${StringSearch}" StringSearch 
-	printf '%s\n' "	\"${StringSearch}\"" 
+	printf '%s\n' "" "	\"${StringSearch}\"" 
 	IFS="${oldIFS}" 
 } 
 
@@ -74,7 +79,7 @@ function func_testReplacement() {
 	# emulate name change for user evaluation 
 	cd "${containingFolderPath}" 
 	for filename in *"${fileExtension}" ; do 
-		printf '%b\n' "$filename  →  " "${filename/${StringSearch}/${StringReplacement}}" "" 
+		printf '%b\n' "${filename}  →  " "${filename/${StringSearch}/${StringReplacement}}" "" 
 	done 
 } 
 
@@ -104,12 +109,11 @@ function func_performReplacement() {
 } 
 
 function main() { 
-	printf '%s\n' "" "Hello.  " "" 
-	printf '%s\n' "Crtl-c at any time abandons any changes and exits the script.  " "" 
+	func_intro 
 	func_getContainingFolderLoop
 	func_testReplacementLoop 
 	func_performReplacement 
-	exit 0 
+	exit $? 
 } 
 
 ## 
