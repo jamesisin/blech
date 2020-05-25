@@ -18,8 +18,9 @@ declare directory_MusicLibraryRoot_source
 declare directory_PMPRoot_destination 
 declare naughtyFilesystem="y" 
 declare anotherPlaylist="y" 
-declare -a files_syncSource 
-declare -a files_syncDestination 
+declare -a A_files_syncSource 
+declare -a A_files_syncDestination 
+declare files_Remain 
 
 # # debugging 
 # playlistPath=".m3u" 
@@ -40,6 +41,9 @@ declare -a files_syncDestination
 # 
 # split paths into root part and path part so substitutions only happen to path part # done 
 # "${rootPart}/${pathPart}" # done 
+# 
+# make a function specifically for the foler confirmation if statement 
+# function func_folderConfirmatoin or similar 
 
 function func_GetCurrentUser() { 
 	if [[ ! "${USER}" == root ]] ; then 
@@ -57,7 +61,7 @@ function func_GetCurrentUser() {
 
 function func_EnterToContinue() { 
 	# just waits for the user before proceeding; a timer could be added later 
-	read -rp "Press [Enter] to continue…  " 
+	read -rp "	Press [Enter] to continue…  " 
 } 
 
 function func_getDirectories() { 
@@ -70,7 +74,7 @@ function func_getDirectories() {
 function func_anotherPlaylist() { 
 	# Does the user want to sync any additional playlist?  
 	printf '\n' 
-	read -rp "Would you like to sync another playlist?  (Y/n)  " -N1 anotherPlaylist 
+	read -rp "Would you like to sync another playlist?  (Choose no since this doesn't work yet.)  (Y/n)  " -N1 anotherPlaylist 
 	printf '\n' 
 }
 
@@ -87,17 +91,16 @@ function func_MultiplePlaylists() {
 
 function func_getPlaylist() { 
 	# obtain directory in which to work 
+	printf '%s\n' "	→	Playlist:  " 
 	read -rep "Please provide the path to the playlist you want to synchronize:  " -i "${playlistPath}" playlistPath 
 	# expand the ~/ if it gets submitted 
 	playlistPath="${playlistPath/#~/${HOME}}" 
 	# fix spaces to be used in a quoted variable 
 	playlistPath="${playlistPath//\\/}" 
 	if [ -f "${playlistPath}" ] ; then 
-		printf '%s\n' "I have confirmed this is a file.  " 
-		printf '%s\n' "${playlistPath}" "" 
+		printf '%s\n' "	I have confirmed this is a directory:	${playlistPath}" "" 
 	else 
-		printf '%s\n' "I cannot confirm this is a file.  " 
-		printf '%s\n' "${playlistPath}" "" 
+		printf '%s\n' "	I cannot confirm this is a directory:	${playlistPath}" "" 
 	fi 
 } 
 
@@ -110,17 +113,16 @@ function func_getPlaylistLoop() {
 
 function func_getMusicLibraryRoot() { 
 	# do I need this if the playlist has paths?  
+	printf '%s\n' "	→	Library Root:  " 
 	read -rep "Please provide the root directory for your music library:  " -i "${directory_MusicLibraryRoot_source}" directory_MusicLibraryRoot_source 
 	# expand the ~/ if it gets submitted 
 	directory_MusicLibraryRoot_source="${directory_MusicLibraryRoot_source/#~/${HOME}}" 
 	# fix spaces to be used in a quoted variable 
 	directory_MusicLibraryRoot_source="${directory_MusicLibraryRoot_source//\\/}" 
 	if [ -d "${directory_MusicLibraryRoot_source}" ] ; then 
-		printf '%s\n' "I have confirmed this is a directory.  " 
-		printf '%s\n' "${directory_MusicLibraryRoot_source}" "" 
+		printf '%s\n' "	I have confirmed this is a directory:	${directory_MusicLibraryRoot_source}" "" 
 	else 
-		printf '%s\n' "I cannot confirm this is a directory.  " 
-		printf '%s\n' "${directory_MusicLibraryRoot_source}" "" 
+		printf '%s\n' "	I cannot confirm this is a directory:	${directory_MusicLibraryRoot_source}" "" 
 	fi 
 } 
 
@@ -131,17 +133,16 @@ function func_getMusicLibraryRootLoop() {
 } 
 
 function func_getPMPRoot() { 
+	printf '%s\n' "	→	PMP Root:  " 
 	read -rep "Please provide the root directory for your music player:  " -i "${directory_PMPRoot_destination}" directory_PMPRoot_destination 
 	# expand the ~/ if it gets submitted 
 	directory_PMPRoot_destination="${directory_PMPRoot_destination/#~/${HOME}}" 
 	# fix spaces to be used in a quoted variable 
 	directory_PMPRoot_destination="${directory_PMPRoot_destination//\\/}" 
 	if [ -d "${directory_PMPRoot_destination}" ] ; then 
-		printf '%s\n' "I have confirmed this is a directory.  " 
-		printf '%s\n' "${directory_PMPRoot_destination}" "" 
+		printf '%s\n' "	I have confirmed this is a directory:	${directory_PMPRoot_destination}" "" 
 	else 
-		printf '%s\n' "I cannot confirm this is a directory.  " 
-		printf '%s\n' "${directory_PMPRoot_destination}" "" 
+		printf '%s\n' "	I cannot confirm this is a directory:	${directory_PMPRoot_destination}" "" 
 	fi 
 } 
 
@@ -153,6 +154,7 @@ function func_getPMPRootLoop() {
 
 function func_PMP_naughtyFilesystem() { 
 	# if the PMP uses FAT or NTFS then sub certain characters with __ 
+	printf '%s\n' "	→	Naughty file system swap:  " 
 	printf '%s\n' "Some file systems are unable to handle certain characters.  " 
 	printf '%s\n' "FAT and NTFS file systems in particular are bad about this.  " 
 	printf '%s\n' "If you would like we can change : and ? into __ to avoid sync failures.  " 
@@ -161,12 +163,12 @@ function func_PMP_naughtyFilesystem() {
 } 
 
 function func_parsePlaylist() { 
-	readarray -t files_syncSource <<< "$( grep -v '^#' "${playlistPath}" )" 
+	readarray -t A_files_syncSource <<< "$( grep -v '^#' "${playlistPath}" )" 
 	printf '%s\n' "" "Playlist:  ${playlistName}  " 
-	printf '%s\n' "Track count:  ${#files_syncSource[@]} " "" 
+	printf '%s\n' "Track count:  ${#A_files_syncSource[@]} " "" 
 	# useful for debugging:  
-	# for (( i = 0 ; i < ${#files_syncSource[@]} ; i++ )) ; do 
-	# 	printf '%s\n' "${files_syncSource[${i}]}" # path to each track 
+	# for (( i = 0 ; i < ${#A_files_syncSource[@]} ; i++ )) ; do 
+	# 	printf '%s\n' "${A_files_syncSource[${i}]}" # path to each track 
 	# done 
 	func_EnterToContinue 
 	func_CreateSourceAndDestination 
@@ -176,22 +178,26 @@ function func_parsePlaylist() {
 # substitution should only apply to remainder section # done 
 function func_CreateSourceAndDestination() { 
 	# 
-	for (( i = 0 ; i < ${#files_syncSource[@]} ; i++ )) ; do 
-		files_syncDestination[${i}]="${files_syncSource[${i}]#${directory_MusicLibraryRoot_source}}" 
-		# printf '%s\n' "${files_syncDestination[${i}]}" # useful in debugging 
+	printf '%b\n' "" 
+	for (( i = 0 ; i < ${#A_files_syncSource[@]} ; i++ )) ; do 
+		A_files_syncDestination[${i}]="${A_files_syncSource[${i}]#${directory_MusicLibraryRoot_source}}" 
+		# printf '%s\n' "${A_files_syncDestination[${i}]}" # useful in debugging 
 		if [ "${naughtyFilesystem}" != "n" ] ; then 
-			files_syncDestination[${i}]="${files_syncDestination[${i}]//\:/__}" 
-			files_syncDestination[${i}]="${files_syncDestination[${i}]//\?/__}" 
+			A_files_syncDestination[${i}]="${A_files_syncDestination[${i}]//\:/__}" 
+			A_files_syncDestination[${i}]="${A_files_syncDestination[${i}]//\?/__}" 
 		fi 
-		file_destinationPath="$( dirname -- "${directory_PMPRoot_destination}${files_syncDestination[${i}]}" )" 
+		file_destinationPath="$( dirname -- "${directory_PMPRoot_destination}${A_files_syncDestination[${i}]}" )" 
 		if [ ! -d "${file_destinationPath}" ] ; then 
 			mkdir -p "${file_destinationPath}" 
 		fi 
 		# try process substitution 
 		# rsync --files-from=<( printf "%s\n" "${files[@]}" ) source destination 
-		# rsync -rltDvPm --files-from=<( printf "%s\n" "${files_syncSource[${i}]}" ) "${files_syncDestination[${i}]}" 
+		# rsync -rltDvPm --files-from=<( printf "%s\n" "${A_files_syncSource[${i}]}" ) "${A_files_syncDestination[${i}]}" 
 		# the above needs to lose the interation and destination should just be PMProot I guess 
-		rsync -rltDvPmz "${files_syncSource[${i}]}" "${directory_PMPRoot_destination}${files_syncDestination[${i}]}" 
+		files_Remain="$(( ${#A_files_syncSource[@]} - "${i}" ))" 
+		printf '%b\n' "" 
+		printf '%b' "A sync of ${files_Remain} remains of ${#A_files_syncSource[@]} files.  " 
+		rsync -rltDvPmz "${A_files_syncSource[${i}]}" "${directory_PMPRoot_destination}${A_files_syncDestination[${i}]}" 
 	done 
 } 
 
