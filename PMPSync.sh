@@ -162,10 +162,16 @@ function func_PMP_naughtyFilesystem() {
 	printf '\n' 
 } 
 
+function func_syncSizeCalculate() { 
+	syncSize="$( du -ch ${A_files_syncSource}  | tail -1 | cut -f 1 )" 
+} 
+
 function func_parsePlaylist() { 
 	readarray -t A_files_syncSource <<< "$( grep -v '^#' "${playlistPath}" )" 
-	printf '%s\n' "" "Playlist:  ${playlistName}  " 
-	printf '%s\n' "Track count:  ${#A_files_syncSource[@]} " "" 
+	printf '%s\n' "" "Playlist:		${playlistName}  " 
+	printf '%s\n' "Track count:		${#A_files_syncSource[@]} " 
+	func_syncSizeCalculate 
+	printf '%s\n' "Approximate size:	${syncSize} " "" 
 	# useful for debugging:  
 	# for (( i = 0 ; i < ${#A_files_syncSource[@]} ; i++ )) ; do 
 	# 	printf '%s\n' "${A_files_syncSource[${i}]}" # path to each track 
