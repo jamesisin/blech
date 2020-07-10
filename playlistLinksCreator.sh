@@ -102,15 +102,15 @@ function func_getPlaylistName() {
 	directory_MixedTape_fullPath="${directory_MixedTapes_destination}${directory_MixedTape_new}" 
 	if [ -d "${directory_MixedTape_fullPath}" ] ; then 
 		printf '%s\n' "	This directory already exists:	${directory_MixedTape_fullPath}" "" 
-		return 0 
-	else 
 		return 1 
+	else 
+		return 0 
 	fi 
 } 
 
 function func_getPlaylistName_Loop() { 
 	# ask user to name destination folder based on playlist name 
-	while func_getPlaylistName ; do 
+	while ! func_getPlaylistName ; do 
 		printf '%s\n' "	The directory name must be unique.  " 
 	done 
 } 
