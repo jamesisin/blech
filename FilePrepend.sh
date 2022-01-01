@@ -90,6 +90,7 @@ function func_testReplacementLoop() {
 } 
 
 function func_performReplacement() { 
+	# for postpending use $ instead of ^ 
 	if rename "s/^/${StringPrepend}/" *"${fileExtension}" ; then 
 		printf '%s\n' "	Files prepended.  " "" 
 	else 
