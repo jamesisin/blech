@@ -35,9 +35,9 @@ declare -a A_torrentList
 function func_confirmRatio() { 
 	# if ratio is unsusual or unexpected, don't process 
 	# instead consider if this torrent can be made more healthy by extended sharing 
-	local ratio 
-		ratio="$( transmission-remote --torrent ${torrentID} --info | grep Ratio: | sed 's/Ratio:\ //' )" 
-	if ${ratio} > 0 && ${ratio} < 3 ; then 
+	local loc_ratio 
+		loc_ratio="$( transmission-remote --torrent ${torrentID} --info | grep Ratio: | sed 's/Ratio:\ //' )" 
+	if ${loc_ratio} > 0 && ${loc_ratio} < 3 ; then 
 		func_processTorrentEnd 
 	else 
 		printf '%s\n' "Consider torrent ${torrentID} as high ratio seeding candidate.  " 
