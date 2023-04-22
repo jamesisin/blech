@@ -37,7 +37,7 @@ function func_confirmRatio() {
 	# instead consider if this torrent can be made more healthy by extended sharing 
 	local loc_ratio 
 		loc_ratio="$( transmission-remote --torrent ${torrentID} --info | grep Ratio: | sed 's/Ratio:\ //' )" 
-	if ${loc_ratio} > 0 && ${loc_ratio} < 3 ; then 
+	if (( $( printf '%s' "${loc_ratio} > 0" | bc -l ) )) && (( $( printf '%s' "${loc_ratio} < 3" | bc -l ) )) ; then 
 		func_processTorrentEnd 
 	else 
 		printf '%s\n' "Consider torrent ${torrentID} as high ratio seeding candidate.  " 
