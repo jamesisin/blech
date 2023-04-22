@@ -32,16 +32,44 @@ declare -a A_torrentList
 ############### 
 #  Functions  # 
 
+function func_verifyAndRemove() { 
+	# verify contents 
+	transmission-remote -t "${torrentID}" --verify 
+	while transmission-remote --torrent "${torrentID}" --info | grep -q "State: Verifying" ; do 
+		printf '%s\n' "Sleeping for one minute to await verify (${torrentID}).  Will re-check.  " 
+		date ; sleep 60 # find a better way to wait for verify?  
+	done 
+	# check again in case verify located bad packets 
+	if transmission-remote --torrent "${torrentID}" --info | grep -q "Percent Done: 100%" && transmission-remote --torrent "${torrentID}" --info | grep -q "State: Finished" ; then 
+		# move then remove the file(s) 
+		transmission-remote --torrent "${torrentID}" --move "${destinationPath}" && transmission-remote --torrent "${torrentID}" --remove 
+	else 
+		printf '%s\n' "Ignoring torrent ${torrentID} as incomplete.  " 
+	fi 
+} 
+
 function func_confirmRatio() { 
 	# if ratio is unsusual or unexpected, don't process 
 	# instead consider if this torrent can be made more healthy by extended sharing 
 	local loc_ratio 
 		loc_ratio="$( transmission-remote --torrent "${torrentID}" --info | grep Ratio: | sed 's/Ratio:\ //' )" 
-	if (( $( printf '%s' "${loc_ratio} > 0" | bc -l ) )) && (( $( printf '%s' "${loc_ratio} < 3" | bc -l ) )) ; then 
-		func_processTorrentEnd 
+	if (( $( printf '%s\n' "${loc_ratio} > 0" | bc -l ) )) && (( $( printf '%s\n' "${loc_ratio} < 3" | bc -l ) )) ; then 
+		func_verifyAndRemove  
 	else 
 		printf '%s\n' "Consider torrent ${torrentID} as high ratio seeding candidate.  " 
 	fi 
+} 
+
+function func_processTorrentEnd() { 
+	if transmission-remote --torrent "${torrentID}" --info | grep -q "Percent Done: 100%" && transmission-remote --torrent "${torrentID}" --info | grep -q "State: Finished" ; then 
+		func_confirmRatio 
+	fi 
+} 
+
+function func_processList() { 
+	for torrentID in "${A_torrentList[@]}" ; do 
+		func_processTorrentEnd 
+	done 
 } 
 
 function func_getTorrentList() { 	
@@ -56,30 +84,9 @@ function func_getTorrentList() {
 	fi 
 } 
 
-function func_processTorrentEnd() { 
-	for torrentID in "${A_torrentList[@]}" ; do 
-		if transmission-remote --torrent "${torrentID}" --info | grep -q "Percent Done: 100%" && transmission-remote --torrent "${torrentID}" --info | grep -q "State: Finished" ; then 
-			# verify contents 
-			transmission-remote -t "${torrentID}" --verify 
-			while transmission-remote --torrent "${torrentID}" --info | grep -q "State: Verifying" ; do 
-				printf '%s\n' "Sleeping for one minute to await verify (${torrentID}).  Will re-check.  " 
-				date 
-				sleep 60 # find a better way to wait for verify?  
-			done 
-			# check again in case verify located bad packets 
-			if transmission-remote --torrent "${torrentID}" --info | grep -q "Percent Done: 100%" && transmission-remote --torrent "${torrentID}" --info | grep -q "State: Finished" ; then 
-				# move then remove the file(s) 
-				transmission-remote --torrent "${torrentID}" --move "${destinationPath}" && transmission-remote --torrent "${torrentID}" --remove 
-			else 
-				printf '%s\n' "Ignoring torrent ${torrentID} as incomplete.  " 
-			fi 
-		fi 
-	done
-} 
-
 function main() { 
 	func_getTorrentList 
-	func_confirmRatio 
+	func_processList 
 } 
 
 ## 
