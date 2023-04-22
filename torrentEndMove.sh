@@ -20,7 +20,7 @@
 # 
 # # 
 
-readonly destinationPath="/media/princeofparties/3TB_ext4/" 
+readonly destinationPath="/path/you/choose/" 
 declare bash_version 
 declare torrentID 
 declare -a A_torrentList 
