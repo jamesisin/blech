@@ -36,7 +36,7 @@ function func_confirmRatio() {
 	# if ratio is unsusual or unexpected, don't process 
 	# instead consider if this torrent can be made more healthy by extended sharing 
 	local loc_ratio 
-		loc_ratio="$( transmission-remote --torrent ${torrentID} --info | grep Ratio: | sed 's/Ratio:\ //' )" 
+		loc_ratio="$( transmission-remote --torrent "${torrentID}" --info | grep Ratio: | sed 's/Ratio:\ //' )" 
 	if (( $( printf '%s' "${loc_ratio} > 0" | bc -l ) )) && (( $( printf '%s' "${loc_ratio} < 3" | bc -l ) )) ; then 
 		func_processTorrentEnd 
 	else 
