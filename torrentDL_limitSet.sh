@@ -30,7 +30,9 @@ declare -a A_torrentList
 #  Functions  # 
 
 function func_setDownloadLimit() { 
-	transmission-remote --torrent "${torrentID}" --uplimit 1 
+	if ! transmission-remote --torrent "${torrentID}" --info | grep -q "Upload Limit: 1 kB/s" ; then 
+		transmission-remote --torrent "${torrentID}" --uplimit 1 --bandwidth-low 
+	fi 
 } 
 
 function func_processList() { 
