@@ -72,7 +72,7 @@ function func_processList() {
 } 
 
 function func_getTorrentList() { 
-	declare loc_bashVersion 
+	local loc_bashVersion 
 		loc_bashVersion="$( bash --version | head -n1 | cut -d " " -f4 | cut -d "(" -f1 )" 
 	# readarray or mapfile -d fails before bash 4.4.0 
 	if printf '%s\n' "4.4.0" "${loc_bashVersion}" | sort -V -C ; then 
