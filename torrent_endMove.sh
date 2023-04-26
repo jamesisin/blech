@@ -21,7 +21,6 @@
 # # 
 
 readonly destinationPath="/path/you/choose/" 
-declare bash_version 
 declare torrentID 
 declare -a A_torrentList 
 # readonly remoteAuth="--auth=specialTransmissionUser:\"somethingComplex!@#&&fish\"" 
@@ -72,10 +71,11 @@ function func_processList() {
 	done 
 } 
 
-function func_getTorrentList() { 	
-	bash_version="$( bash --version | head -n1 | cut -d " " -f4 | cut -d "(" -f1 )" 
+function func_getTorrentList() { 
+	declare loc_bashVersion 
+		loc_bashVersion="$( bash --version | head -n1 | cut -d " " -f4 | cut -d "(" -f1 )" 
 	# readarray or mapfile -d fails before bash 4.4.0 
-	if printf '%s\n' "4.4.0" "${bash_version}" | sort -V -C ; then 
+	if printf '%s\n' "4.4.0" "${loc_bashVersion}" | sort -V -C ; then 
 		mapfile -d $'\0' A_torrentList < <( transmission-remote --list | sed -e '1d;$d;s/^ *//' | cut --only-delimited --delimiter=' ' --fields=1 ) 
 	else 
 		while IFS= read -r ; do 
