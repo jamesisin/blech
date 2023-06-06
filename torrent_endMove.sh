@@ -1,5 +1,5 @@
 #! /usr/bin/env bash 
-# Title   :  torrent_endMove.sh 
+# Title   :  torrentEndMove.sh 
 # Parent  :  n/a 
 # Author  :  JamesIsIn 20230420  Do something nice today.  
 
@@ -34,7 +34,7 @@ declare -a A_torrentList
 function func_verifyAndRemove() { 
 	# verify contents 
 	transmission-remote -t "${torrentID}" --verify 
-	while transmission-remote --torrent "${torrentID}" --info | grep -q "State: Verifying" ; do 
+	while transmission-remote --torrent "${torrentID}" --info | grep -q "State: Verifying\|Queued for verification" ; do # add or awaiting verification or whatever 
 		printf '%s\n' "Sleeping for one minute to await verify (${torrentID}).  Will re-check.  " 
 		date ; sleep 60 # find a better way to wait for verify?  
 	done 
