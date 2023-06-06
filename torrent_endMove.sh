@@ -34,7 +34,7 @@ declare -a A_torrentList
 function func_verifyAndRemove() { 
 	# verify contents 
 	transmission-remote -t "${torrentID}" --verify 
-	while transmission-remote --torrent "${torrentID}" --info | grep -q "State: Verifying\|Queued for verification" ; do # add or awaiting verification or whatever 
+	while transmission-remote --torrent "${torrentID}" --info | grep -q "State: Verifying\|State: Queued for verification" ; do # add or awaiting verification or whatever 
 		printf '%s\n' "Sleeping for one minute to await verify (${torrentID}).  Will re-check.  " 
 		date ; sleep 60 # find a better way to wait for verify?  
 	done 
