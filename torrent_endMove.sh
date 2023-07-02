@@ -52,13 +52,13 @@ function func_confirmRatio() {
 	# instead consider if this torrent can be made more healthy by extended sharing 
 	local loc_ratio 
 		loc_ratio="$( transmission-remote --torrent "${torrentID}" --info | grep Ratio: | sed 's/Ratio:\ //' )" 
-	# give Ratio: Inf a free pass and move the numeric evaluation to an elif 
-	if [[ ${loc_ratio} =~ " None" ]] || [[ ${loc_ratio} =~ " Inf" ]] || [[ ! ${loc_ratio} =~ ^[0-9]+([.][0-9]+)?$ ]] ; then 
+	# probably should fix the ! ! structure here 
+	if ! [[ ! ${loc_ratio} =~ "None" ]] && [[ ! ${loc_ratio} =~ "Inf" ]] && [[ ! ${loc_ratio} =~ ^[0-9]+([.][0-9]+)?$ ]] ; then 
 		printf '%s\n' "Check torrent ${torrentID} ratio manually as it's non-numeric (Ratio:${loc_ratio}).  " 
 	elif (( $( printf '%s\n' "${loc_ratio} > 0" | bc -l ) )) && (( $( printf '%s\n' "${loc_ratio} < 3" | bc -l ) )) ; then 
 		func_verifyAndRemove  
 	else 
-		printf '%s\n' "Consider torrent ${torrentID} as high ratio seeding candidate (Ratio: ${loc_ratio}).  " 
+		printf '%s\n' "Consider torrent ${torrentID} as high ratio seeding candidate (Ratio:${loc_ratio}).  " 
 	fi 
 } 
 
