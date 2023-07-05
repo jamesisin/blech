@@ -51,15 +51,17 @@ function func_confirmRatio() {
 	# if ratio is unsusual or unexpected, don't process 
 	# instead consider if this torrent can be made more healthy by extended sharing 
 	local loc_ratio 
-		loc_ratio="$( transmission-remote --torrent "${torrentID}" --info | grep Ratio: | sed 's/Ratio:\ //' )" 
-	if [[ ! ${loc_ratio} =~ ^[0-9]+([.][0-9]+)?$ ]] ; then 
+		loc_ratio="$( transmission-remote --torrent "${torrentID}" --info | grep Ratio: | sed 's/\ \ Ratio:\ //' )" 
+	if [[ ${loc_ratio} =~ ^[0-9]+([.][0-9]+)?$ ]] ; then 
+		if (( $( printf '%s\n' "${loc_ratio} > 0" | bc -l ) )) && (( $( printf '%s\n' "${loc_ratio} < 3" | bc -l ) )) ; then 
+			func_verifyAndRemove 
+		else 
+			printf '%s\n' "Consider torrent ${torrentID} as high ratio seeding candidate (Ratio:${loc_ratio}).  " 
+		fi 
+	else 
 		printf '%s\n' "Check torrent ${torrentID} ratio manually as it's non-numeric (Ratio:${loc_ratio}).  " 
 		return 255 
-	elif (( $( printf '%s\n' "${loc_ratio} > 0" | bc -l ) )) && (( $( printf '%s\n' "${loc_ratio} < 3" | bc -l ) )) ; then 
-			func_verifyAndRemove 
-	else 
-		printf '%s\n' "Consider torrent ${torrentID} as high ratio seeding candidate (Ratio:${loc_ratio}).  " 
-	fi 
+	fi
 } 
 
 function func_processTorrentEnd() { 
