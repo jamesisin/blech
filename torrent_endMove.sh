@@ -56,10 +56,10 @@ function func_confirmRatio() {
 		if (( $( printf '%s\n' "${loc_ratio} > 0" | bc -l ) )) && (( $( printf '%s\n' "${loc_ratio} < 3" | bc -l ) )) ; then 
 			func_verifyAndRemove 
 		else 
-			printf '%s\n' "Consider torrent ${torrentID} as high ratio seeding candidate (Ratio:${loc_ratio}).  " 
+			printf '%s\n' "Consider torrent ${torrentID} as high ratio seeding candidate (Ratio:  ${loc_ratio}).  " 
 		fi 
 	else 
-		printf '%s\n' "Check torrent ${torrentID} ratio manually as it's non-numeric (Ratio:${loc_ratio}).  " 
+		printf '%s\n' "Check torrent ${torrentID} ratio manually as it's non-numeric (Ratio:  ${loc_ratio}).  " 
 		return 255 
 	fi
 } 
