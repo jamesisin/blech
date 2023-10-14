@@ -51,8 +51,8 @@ function func_processList() {
 } 
 
 function func_getTorrentList() { 
-	local loc_bashVersion 
-		loc_bashVersion="$( bash --version | head -n1 | cut -d " " -f4 | cut -d "(" -f1 )" 
+	# local loc_bashVersion 
+	# 	loc_bashVersion="$( bash --version | head -n1 | cut -d " " -f4 | cut -d "(" -f1 )" 
 	# readarray or mapfile -d fails before bash 4.4.0 
 	# why the fuck is mapfile not working in bash 5.1.16?  Is this code bad?  
 	# if printf '%s\n' "4.4.0" "${loc_bashVersion}" | sort -V -C ; then 
