@@ -38,6 +38,8 @@ readonly const_specialsRoot="/media/DRIVE/zz_etc/"
 # 
 # # 
 
+# ToDo:  3 folders (out of hundreds) are creating links inside themselves in addition to the expected links.  
+
 ## 
 
 ############### 
@@ -52,13 +54,34 @@ function func_testRoot() {
 	fi 
 } 
 
+function func_removeOldSoftLinks() { 
+	# find and remove any existing links from the specials hierarchy 
+	# this just keeps the specials directory clear of stale links 
+	find "${const_specialsRoot}" -type l -delete 
+} 
+
 function func_createSoftLinks() { 
 	# create soft links in the target directory based on the found objects array 
 	for file in "${loc_A_foundFilePaths[@]}" ; do 
 		linkName="$( basename "${file}" )" 
 		linkPath="${const_specialsRoot}${AA_targetCharacter[${targetSymbol}]}${linkName}" 
-		ln -sf "${file}" "${linkPath}" # -f is to force over-write of links 
+		ln -s "${file/\/media\/DRIVE\/'../..'}" "${linkPath}" # must use relative links for Samba 
 	done 
+} 
+
+function func_findMarkedObjects() { 
+	# function to find files and load array of files or file paths 
+	local -a loc_A_foundFilePaths 
+	for path in "${const_A_mDLNAroot[@]}" ; do 
+		mapfile -d '' -O"${#loc_A_foundFilePaths[@]}" loc_A_foundFilePaths < <( find "${path}" -name "*${targetSymbol}*" -print0 ) 
+		# mapfile -d '' loc_A_foundFilePaths < <( find /media/DRIVE/2watch/ -name "*👁*" -print0 ) 
+	done 
+	# prints "quantity of symbol" 
+	printf '%s' "${#loc_A_foundFilePaths[@]} of ${#loc_A_foundFilePaths[@]} " 
+	# yes line prints a line of that number of those symbols 
+	yes "${targetSymbol}" | head -"${#loc_A_foundFilePaths[@]}" | paste -s -d '' - 
+	export loc_A_foundFilePaths 
+	func_createSoftLinks 
 } 
 
 function func_loop_findMarkedObjects() { 
@@ -70,24 +93,10 @@ function func_loop_findMarkedObjects() {
 	done 
 } 
 
-function func_findMarkedObjects() { 
-	# function to find files and load array of files or file paths 
-	local -a loc_A_foundFilePaths 
-	for path in "${const_A_mDLNAroot[@]}" ; do 
-		mapfile -d '' -O"${#loc_A_foundFilePaths[@]}" loc_A_foundFilePaths < <( find "${path}" -name "*${targetSymbol}*" -print0 ) 
-		# mapfile -d '' loc_A_foundFilePaths < <( find /media/DRIVE/2watch/ -type f -name "*🎄*" -print0 ) 
-	done 
-	# prints "quantity of symbol" 
-	printf '%s' "${#loc_A_foundFilePaths[@]} of ${#loc_A_foundFilePaths[@]} " 
-	# yes line prints a line of that number of those symbols 
-	yes "${targetSymbol}" | head -"${#loc_A_foundFilePaths[@]}" | paste -s -d '' - 
-	export loc_A_foundFilePaths 
-	func_createSoftLinks 
-} 
-
 function main() { 
 	# 
 	func_testRoot 
+	func_removeOldSoftLinks 
 	func_loop_findMarkedObjects 
 } 
 
