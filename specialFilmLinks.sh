@@ -38,8 +38,11 @@ readonly const_specialsRoot="/media/DRIVE/zz_etc/"
 # 
 # # 
 
-# ToDo:  3 folders (out of hundreds) are creating links inside themselves in addition to the expected links.  
-
+# ToDo:  If a folder name is repeated (in watched, 2watch, or other) the second linking attempt will follow the first link out of the specials directory and place its link in the first target.  
+	# I could steal the containing folder name, create that folder in each specials folder (if it doesn't exist), and put the links in that sub-folder.  
+	# Actually, not the directly containing folder but just 2watch v watched.  
+	# Then purge empty directories at one level below the specials folders (to keep any empty specials folders) at the end of opperations.  
+	# Alternatively, use specials directories within each of 2watch and watched (watched would get both watched and other).  
 ## 
 
 ############### 
