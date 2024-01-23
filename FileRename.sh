@@ -7,8 +7,8 @@
 
 ## 
 
-############### 
-#  Variables  # 
+################## 
+#  Declarations  # 
 
 declare containingFolderPath="${1}" 
 declare filename 
@@ -113,7 +113,7 @@ function main() {
 	func_getContainingFolderLoop
 	func_testReplacementLoop 
 	func_performReplacement 
-	exit $? 
+	return $? 
 } 
 
 ## 
@@ -122,7 +122,6 @@ function main() {
 #  Main  # 
 
 main 
-
-exit 255 
+exit $? 
 
 ## 
