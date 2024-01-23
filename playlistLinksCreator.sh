@@ -8,8 +8,8 @@
 
 ## 
 
-############### 
-#  Variables  # 
+################## 
+#  Declarations  # 
 
 declare playlistPath 
 	playlistPath="${1}" 
@@ -17,6 +17,8 @@ declare directory_MixedTapes_destination
 declare directory_MixedTape_new 
 declare -a A_playlistPaths_full 
 declare directory_MixedTape_fullPath 
+readonly const_PoP_path="/home/princeofparties/Music" 
+readonly const_Tuna_path="/media/Tunas" 
 
 # # debugging 
 # playlistPath=".m3u" 
@@ -131,6 +133,7 @@ function func_MixedTapesDestination_create() {
 
 function func_parsePlaylist() { 
 	readarray -t A_playlistPaths_full <<< "$( grep -v -e '^#' "${playlistPath}" )" 
+	func_fixPoPpathProblem 
 	printf '%s\n' "Playlist:		${playlistName}  " 
 	printf '%s\n' "Track count:		${#A_playlistPaths_full[@]} " "" 
 	for (( i = 0 ; i < ${#A_playlistPaths_full[@]} ; i++ )) ; do 
@@ -147,10 +150,10 @@ function func_MixedTapesDestination_CreateLinks() {
 		if [[ -n "${A_playlistPaths_full[${i}]}" ]] ; then # ignore empty elements (blank lines) 
 			if [[ ${track} -lt 10 ]] ; then # prepend zero to single-digit numbers 
 				# for use across files systems add -s for soft links 
-				ln -s "${A_playlistPaths_full[${i}]}" "${directory_MixedTape_fullPath}/0${track}__${A_playlistPaths_fileNames[i]}" 
+				ln "${A_playlistPaths_full[${i}]}" "${directory_MixedTape_fullPath}/0${track}__${A_playlistPaths_fileNames[i]}" 
 			else 
 				# for use across files systems add -s for soft links 
-				ln -s "${A_playlistPaths_full[${i}]}" "${directory_MixedTape_fullPath}/${track}__${A_playlistPaths_fileNames[i]}" 
+				ln "${A_playlistPaths_full[${i}]}" "${directory_MixedTape_fullPath}/${track}__${A_playlistPaths_fileNames[i]}" 
 			fi 
 		fi 
 		(( i++ )) 
@@ -161,6 +164,14 @@ function func_MixedTapesDestination_CreateLinks() {
 function func_MixedTapesDestination_CreateLinks_Loop() { 
 	# TODO:  add error deteciton for link creation 
 	func_MixedTapesDestination_CreateLinks
+} 
+
+function func_fixPoPpathProblem() { 
+	# read variable and swap data 
+	for (( i = 0 ; i < ${#A_playlistPaths_full[@]} ; i++ )) ; do 
+		A_playlistPaths_full[${i}]="${A_playlistPaths_full[${i}]//${const_PoP_path}/${const_Tuna_path}}" 
+	done 
+	# TODO:  add user input for these variables 
 } 
 
 function main() { 
@@ -186,7 +197,6 @@ function main() {
 #  Main  # 
 
 main 
-
 exit $? 
 
 ## 
