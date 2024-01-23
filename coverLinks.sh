@@ -10,11 +10,11 @@
 
 ## 
 
-############### 
-#  Variables  # 
+################## 
+#  Declarations  # 
 
-readonly const_rootDirectory="/music/root/path/" 
-readonly const_coverSymLinkFolder="/music/root/path/zetc/CoverSlideshow/SymLinks/" # a unique folder to house only these cover links 
+readonly const_rootDirectory="/media/Tunas/iTuna/" 
+readonly const_coverSymLinkFolder="/media/Tunas/iTuna/zetc/CoverSlideshow/SymLinks/" 
 declare -a A_coverList 
 
 # # debugging 
@@ -72,7 +72,7 @@ function func_createSymLinks() {
 		# multiline output version 
 		# printf '%s\n' "Linking:  ${loc_linkName}" 
 		# must use relative links (if using soft links) for Samba 
-		ln -s "${A_coverList[i]/\/music\/root\/path/'../../..'}" "${const_coverSymLinkFolder}""${loc_linkName}" 
+		ln -s "${A_coverList[i]/\/media\/Tunas\/iTuna/'../../..'}" "${const_coverSymLinkFolder}""${loc_linkName}" 
 		# ln "${A_coverList[i]}" "${const_coverSymLinkFolder}"${loc_linkName}" # hardlink (absolute) version 
 	done 
 } 
@@ -82,7 +82,6 @@ function main() {
 	func_removeOldSymLinks 
 	func_createSymLinks 
 	printf '%s\n' "" "All done!  " "" 
-	unset 
 } 
 
 ## 
@@ -91,7 +90,6 @@ function main() {
 #  Main  # 
 
 main 
-
 exit $? 
 
 ## 
