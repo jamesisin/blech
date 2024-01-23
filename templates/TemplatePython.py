@@ -5,7 +5,6 @@
 
 # Purpose :   
 # 
-
 ## 
 
 
@@ -19,8 +18,8 @@
 
 ## 
 
-################# 
-#  Definitions  # 
+################## 
+#  Declarations  # 
 
 
 
@@ -39,7 +38,7 @@ def main():
 ########## 
 #  Main  # 
 
-if __name__ == '__main__': 
+if __name__ == "__main__":  
 	main() 
 
 raise SystemExit(0) 
