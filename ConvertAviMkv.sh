@@ -7,8 +7,8 @@
 
 ## 
 
-############### 
-#  Variables  # 
+################## 
+#  Declarations  # 
 
 declare rootAVIFolderPath="${1}" 
 declare -a A_aviToConvert 
@@ -68,7 +68,7 @@ function func_convertAVIandBuildContainingPathArray() {
 	local loc_pathThisFolder 
 	for avi in "${A_aviToConvert[@]}" ; do 
 		printf '%s\n' "${avi}	→	${avi/avi/mkv}" "" 
-		mkvmerge -o "${avi/avi/mkv}" "${avi}" 
+		mkvmerge -o "${avi/%avi/mkv}" "${avi}" 
 		loc_pathThisFolder=$( dirname "${avi}" ) 
 		# grep requires -F to prevent it interpreting a - in a path as signifying a range 
 		if ! printf '%s\n' "${A_foldersWithAVIfiles[@]}" | grep -Fq --line-regexp "${loc_pathThisFolder}" ; then 
@@ -89,7 +89,6 @@ function main() {
 #  Main  # 
 
 main 
-
 exit $? 
 
 ## 
