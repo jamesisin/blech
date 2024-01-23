@@ -12,8 +12,8 @@
 
 ## 
 
-############### 
-#  Variables  # 
+################## 
+#  Declarations  # 
 
 declare directory_filePathToEvaluate 
 declare -a A_fileType 
@@ -27,6 +27,7 @@ declare -A AA_naughtyCharacters
 	AA_naughtyCharacters[__lt__]='<' 
 	AA_naughtyCharacters[__gt__]='>' 
 	AA_naughtyCharacters[__p__]='|' 
+# 
 declare -a A_illegalCharacter_substitution 
 declare -a A_illegalCharacter_substitution_postSub 
 
@@ -95,6 +96,7 @@ function main() {
 	func_GetCurrentUser 
 	func_getFilepathToEvaluate_loop 
 	func_substituteIllegalCharacters 
+	return $? 
 } 
 
 ## 
@@ -103,7 +105,6 @@ function main() {
 #  Main  # 
 
 main 
-
 exit $? 
 
 ## 
