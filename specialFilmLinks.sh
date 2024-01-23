@@ -1,18 +1,19 @@
 #! /usr/bin/env bash 
 # Title   :  specialFilmLinks.sh 
 # Parent  :  n/a 
-# Author  :  JamesIsIn 20231104  Do something nice today.  
+# Author  :  JamesIsIn 20240104  Do something nice today.  
 
 # Purpose :  Find special objects (marked like 🎄) and create sym-links to the respecitve folders (x-mas 🎄).   
 # 
 
 ## 
 
-############### 
-#  Variables  # 
+################## 
+#  Declarations  # 
 
 declare -A AA_targetCharacter 
 	# AA_targetCharacter[]="/" # template 
+	# 
 	AA_targetCharacter[✭]="✭/" 
 	AA_targetCharacter[✭✭]="✭✭/" 
 	AA_targetCharacter[👁]="animated 👁/" 
@@ -26,23 +27,25 @@ declare -A AA_targetCharacter
 	AA_targetCharacter[␠]="lang_ES ␠/" 
 	AA_targetCharacter[⚜]="lang_FR ⚜/" 
 	AA_targetCharacter[🍕]="lang_IT 🍕/" 
+	AA_targetCharacter[☠]="post-apocalyptic ☠/" 
 	AA_targetCharacter[🚀]="SpaceGal 🚀/" 
 	AA_targetCharacter[👽]="SpaceGal_firstContact 👽/" 
+	AA_targetCharacter[⌚]="time ⌚/" 
+	AA_targetCharacter[🧛]="vampires 🧛/" 
 	AA_targetCharacter[🎄]="x-mas 🎄/" 
 	AA_targetCharacter[🧟]="zombies 🧟/" 
+# 
 declare targetSymbol 
-readonly -a const_A_mDLNAroot=( "/media/DRIVE/2watch/" "/media/DRIVE/watched/" "/media/DRIVE/other/" ) 
-readonly const_specialsRoot="/media/DRIVE/zz_etc/" 
+readonly -a const_A_mDLNAroot=( "/media/Works/mDLNA/2watch/" "/media/Works/mDLNA/watched/" "/media/Works/mDLNA/Super/" ) 
+readonly const_specialsRoot="/media/Works/mDLNA/zz_etc/" 
+declare targetSymbol 
 
 # # debugging 
 # 
+# AA_targetCharacter[💩]="happy-crappy 💩/" # this is a small non-null folder and file result-set 
+# 
 # # 
 
-# ToDo:  If a folder name is repeated (in watched, 2watch, or other) the second linking attempt will follow the first link out of the specials directory and place its link in the first target.  
-	# I could steal the containing folder name, create that folder in each specials folder (if it doesn't exist), and put the links in that sub-folder.  
-	# Actually, not the directly containing folder but just 2watch v watched.  
-	# Then purge empty directories at one level below the specials folders (to keep any empty specials folders) at the end of opperations.  
-	# Alternatively, use specials directories within each of 2watch and watched (watched would get both watched and other).  
 ## 
 
 ############### 
@@ -59,16 +62,22 @@ function func_testRoot() {
 
 function func_removeOldSoftLinks() { 
 	# find and remove any existing links from the specials hierarchy 
-	# this just keeps the specials directory clear of stale links 
+	# this helps keep the specials directory clear of stale links 
 	find "${const_specialsRoot}" -type l -delete 
 } 
 
 function func_createSoftLinks() { 
 	# create soft links in the target directory based on the found objects array 
-	for file in "${loc_A_foundFilePaths[@]}" ; do 
-		linkName="$( basename "${file}" )" 
-		linkPath="${const_specialsRoot}${AA_targetCharacter[${targetSymbol}]}${linkName}" 
-		ln -s "${file/\/media\/DRIVE\/'../..'}" "${linkPath}" # must use relative links for Samba 
+	for filePath in "${loc_A_foundFilePaths[@]}" ; do 
+		linkName="$( basename "${filePath}" )" 
+		linkPath="${const_specialsRoot}${AA_targetCharacter[${targetSymbol}]}" 
+		# ln -s "${A_coverList[i]/\/media\/Tunas\/iTuna/'../../..'}" "${const_coverSymLinkFolder}""${loc_linkName}" # from coverLinnks.sh 
+		if [[ -L "${linkPath}${linkName}" ]] ; then 
+			linkNameAug="${linkName/#/'zzWatched'}" 
+			ln -s "${filePath/\/media\/Works\/mDLNA/'../..'}" "${linkPath}${linkNameAug}" # must use relative links for Samba 
+		else 
+			ln -s "${filePath/\/media\/Works\/mDLNA/'../..'}" "${linkPath}${linkName}" # must use relative links for Samba 
+		fi 
 	done 
 } 
 
@@ -77,7 +86,7 @@ function func_findMarkedObjects() {
 	local -a loc_A_foundFilePaths 
 	for path in "${const_A_mDLNAroot[@]}" ; do 
 		mapfile -d '' -O"${#loc_A_foundFilePaths[@]}" loc_A_foundFilePaths < <( find "${path}" -name "*${targetSymbol}*" -print0 ) 
-		# mapfile -d '' loc_A_foundFilePaths < <( find /media/DRIVE/2watch/ -name "*👁*" -print0 ) 
+		# mapfile -d '' loc_A_foundFilePaths < <( find /media/Works/mDLNA/watched/ -name "*💩*" -print0 ) # debug example 
 	done 
 	# prints "quantity of symbol" 
 	printf '%s' "${#loc_A_foundFilePaths[@]} of ${#loc_A_foundFilePaths[@]} " 
@@ -101,6 +110,7 @@ function main() {
 	func_testRoot 
 	func_removeOldSoftLinks 
 	func_loop_findMarkedObjects 
+	unset 
 } 
 
 ## 
