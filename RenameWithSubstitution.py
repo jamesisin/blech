@@ -5,7 +5,6 @@
 
 # Purpose :  Rename files by changing page numbers.  
 # 
-
 ## 
 
 ############## 
@@ -15,8 +14,8 @@ import os
 
 ## 
 
-############### 
-#  Variables  # 
+################## 
+#  Declarations  # 
 
 global books 
 
@@ -40,7 +39,6 @@ def renameFiles():
 		os.rename(filename,renamefile) 
 		print(filename+" becomes "+renamefile) 
 		i+=1 
-
 
 def main(): 
 	getAndSortFilenames() 
