@@ -8,8 +8,8 @@
 
 ## 
 
-############### 
-#  Variables  # 
+################## 
+#  Declarations  # 
 
 declare containingFolderPath="${1}" 
 declare filename 
@@ -90,11 +90,11 @@ function func_testReplacementLoop() {
 } 
 
 function func_performReplacement() { 
-	# for postpending use $ instead of ^ 
+	# use $ instead of ^ for postpend 
 	if rename "s/^/${StringPrepend}/" *"${fileExtension}" ; then 
 		printf '%s\n' "	Files prepended.  " "" 
 	else 
-		print '%s\n' "	There was a problem.  " "" 
+		printf '%s\n' "	There was a problem.  " "" 
 	fi 
 } 
 
@@ -103,7 +103,7 @@ function main() {
 	func_getContainingFolderLoop
 	func_testReplacementLoop 
 	func_performReplacement 
-	exit $? 
+	return $? 
 } 
 
 ## 
@@ -112,7 +112,6 @@ function main() {
 #  Main  # 
 
 main 
-
 exit $? 
 
 ## 
