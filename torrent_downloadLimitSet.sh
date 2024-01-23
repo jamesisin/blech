@@ -1,5 +1,5 @@
 #! /usr/bin/env bash 
-# Title   :  torrent_downloadLimitSet.sh 
+# Title   :  torrentDL_limitSet.sh 
 # Parent  :  n/a 
 # Author  :  JamesIsIn 20230422  Do something nice today.  
 
@@ -11,8 +11,8 @@
 ## 
 
 
-############### 
-#  Variables  # 
+################## 
+#  Declarations  # 
 
 # # debugging 
 # 
@@ -67,7 +67,6 @@ function main() {
 #  Main  # 
 
 main 
-
 exit $? 
 
 ## 
