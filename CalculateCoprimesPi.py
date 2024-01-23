@@ -5,8 +5,10 @@
 
 # Purpose :  Calculate coprimes of pi like https://www.youtube.com/watch?v=RZBhSi_PwHU 
 # 
-
 ## 
+
+##############
+#  Includes  # 
 
 from random import randint 
 from math import pi 
@@ -14,8 +16,8 @@ from math import sqrt
 
 ## 
 
-############### 
-#  Variables  # 
+################## 
+#  Declarations  # 
 
 countRolls = 0 
 countCoprime = 0 
