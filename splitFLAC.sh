@@ -7,22 +7,22 @@
 
 ## 
 
-############### 
-#  variables  # 
+################## 
+#  Declarations  # 
 
 declare trackname 
 	trackname="%n – %p – %t" 
-declare -a albumfind 
-declare -a cuefind 
+declare -a A_albumfind 
+declare -a A_cuefind 
 declare albumfolder 
-declare -a deadfiles 
-declare -a hidemes 
+declare -a A_deadfiles 
+declare -a A_hidemes 
 declare containingFolderPath="${1}" 
 
 ## 
 
 ############### 
-#  functions  # 
+#  Functions  # 
 
 function func_EnterToContinue() { 
 	# just waits for the user before proceeding; a timer could be added later 
@@ -35,7 +35,7 @@ function func_getContainingFolder() {
 	printf '%s\n' "Crtl-c at any time abandons any changes and exits the script.  " "" 
 	func_EnterToContinue 
 	while [ ! -d "${containingFolderPath}" ] ; do 
-		read -rep "Please provide the containing folder for the files to be renamed:  " -i "${containingFolderPath}" containingFolderPath 
+		read -rep "Please provide the containing folder for the files to be split:  " -i "${containingFolderPath}" containingFolderPath 
 		# expand the ~/ if it gets submitted 
 		containingFolderPath="${containingFolderPath/#~/${HOME}}" 
 		# fix spaces to be used in a quoted variable 
@@ -54,58 +54,60 @@ function func_FileNamingOptions() {
 	# number, performer, and track names 
 	printf '%s\n' "Assuming a cue has good information there are two formatting options:  " 
 	printf '%s\n' "01 – Track Name.flac  " "01 – Performer Name – Track Name.flac  " "" 
-	printf '%s\n' "Do you want to include the performer name in the file names?  " 
-	read -rp "[y or n]:  " 
-	if [ "${REPLY}" = "[Yy]" ] ; then 
-		printf '%s\n' "Ok, I'll include performer names:  01 – Performer Name – Track Name.flac  " "" 
-		trackname="%n – %p – %t" 
-	else [ "${REPLY}" = "[Nn]" ] ; 
-		printf '%s\n' "Ok, I won't include performer names:  01 – Track Name.flac  " "" 
-		trackname="%n – %t" 
-	fi 
+	unset REPLY 
+	until [[ "${REPLY}" =~ (Y|y|N|n) ]] ; do 
+		printf '%s\n' "Do you want to include the performer name in the file names?  " 
+		read -rp "[y or n]:  " -n1 
+		if [[ "${REPLY}" =~ (Y|y) ]] ; then 
+			printf '%s\n' "" "Ok, I'll attempt to include performer names:  01 – Performer Name – Track Name.flac  " "" 
+		else [[ "${REPLY}" =~ (N|n) ]] ; 
+			printf '%s\n' "" "Ok, I won't include performer names:  01 – Track Name.flac  " "" 
+			trackname="%n – %t" 
+		fi 
+	done 
 } 
 
 function func_RecursivelyParseFilesIntoArrays() { 
-	# mapfile -t albumfind < <( find "${containingFolderPath}" -type f -iname \*.ape -o -iname \*.flac ) 
-	mapfile -t albumfind < <( find "${containingFolderPath}" -type f -iname \*.flac ) 
-	mapfile -t cuefind < <( find "${containingFolderPath}" -type f -iname \*.cue ) 
+	# mapfile -t A_albumfind < <( find "${containingFolderPath}" -type f -iname \*.ape -o -iname \*.flac ) 
+	mapfile -t A_albumfind < <( find "${containingFolderPath}" -type f -iname \*.flac ) 
+	mapfile -t A_cuefind < <( find "${containingFolderPath}" -type f -iname \*.cue ) 
 } 
 
 function func_splitFilesAndHideOriginals() { 
 	# split apes and flacs; hide album files 
-	for (( i=0 ; i < ${#albumfind[@]} ; i++ )) ; do 
+	for (( i=0 ; i < ${#A_albumfind[@]} ; i++ )) ; do 
 		# path is cue iteration less file name 
-		albumfolder="${cuefind[i]%/*.*}" 
-		shnsplit -d "$albumfolder" -o flac -f "${cuefind[i]}" -t "$trackname" "${albumfind[i]}" && mv "${albumfind[i]}" "${albumfind[i]}".hideme ; 
+		albumfolder="${A_cuefind[i]%/*.*}" 
+		shnsplit -d "${albumfolder}" -o flac -f "${A_cuefind[i]}" -t "${trackname}" "${A_albumfind[i]}" && mv "${A_albumfind[i]}" "${A_albumfind[i]}".hideme ; 
 	done 
 } 
 
 function func_hide00Files() { 
-	# mapfile -t deadfiles < <( find "${containingFolderPath}" -type f -iname 00\*.ape -o -iname 00\*.flac ) 
-	mapfile -t deadfiles < <( find "${containingFolderPath}" -type f -iname 00\*.flac ) 
-	for (( i=0 ; i < ${#deadfiles[@]} ; i++ )) ; do 
-		mv "${deadfiles[i]}" "${deadfiles[i]}".hideme ; 
+	# mapfile -t A_deadfiles < <( find "${containingFolderPath}" -type f -iname 00\*.ape -o -iname 00\*.flac ) 
+	mapfile -t A_deadfiles < <( find "${containingFolderPath}" -type f -iname 00\*.flac ) 
+	for (( i=0 ; i < ${#A_deadfiles[@]} ; i++ )) ; do 
+		mv "${A_deadfiles[i]}" "${A_deadfiles[i]}".hideme ; 
 	done 
 } 
 
 function func_tagSplitFiles() { 
 	# tag files 
-	for (( i=0 ; i < ${#cuefind[@]} ; i++ )) ; do 
+	for (( i=0 ; i < ${#A_cuefind[@]} ; i++ )) ; do 
 		# path is cue iteration less file name 
-		albumfolder="${cuefind[i]%/*.*}" 
-		cuetag "${cuefind[i]}" "$albumfolder"\/*.flac && mv "${cuefind[i]}" "${cuefind[i]}".hideme ; 
+		albumfolder="${A_cuefind[i]%/*.*}" 
+		cuetag "${A_cuefind[i]}" "${albumfolder}"\/*.flac && mv "${A_cuefind[i]}" "${A_cuefind[i]}".hideme ; 
 	done 
 } 
 
 function func_locateSourceFiles() { 
-	mapfile -t hidemes < <( find "${containingFolderPath}" -type f -iname \*.hideme ) 
-}
+	mapfile -t A_hidemes < <( find "${containingFolderPath}" -type f -iname \*.hideme ) 
+} 
 
 function func_PerformCleanup() { 
 	# remove hideme files and unset all variables 
 	func_locateSourceFiles 
-	for (( i=0 ; i < ${#hidemes[@]} ; i++ )) ; do 
-		rm "${hidemes[i]}" ; 
+	for (( i=0 ; i < ${#A_hidemes[@]} ; i++ )) ; do 
+		rm "${A_hidemes[i]}" ; 
 	done 
 	unset 
 } 
@@ -113,15 +115,15 @@ function func_PerformCleanup() {
 function func_revertSourceFiles() { 
 	# revert used files and exit 
 	func_locateSourceFiles 
-	for (( i=0 ; i < ${#hidemes[@]} ; i++ )) ; do 
-		mv "${hidemes[i]}" "${hidemes[i]/\.hideme/}" ; 
+	for (( i=0 ; i < ${#A_hidemes[@]} ; i++ )) ; do 
+		mv "${A_hidemes[i]}" "${A_hidemes[i]/\.hideme/}" ; 
 	done 
 } 
 
 function func_confirmCueRatio() { 
 	# follow array counts 
-	printf '%s\n' "" "Counts are as follows:  There are ${#albumfind[@]} albums and ${#cuefind[@]} cues.  " 
-	if ! [ "${#albumfind[@]}" == "${#cuefind[@]}" ] ; then 
+	printf '%s\n' "" "Counts are as follows.  " "	Albums:	${#A_albumfind[@]} " "	Cues:	${#A_cuefind[@]} " 
+	if ! [ "${#A_albumfind[@]}" == "${#A_cuefind[@]}" ] ; then 
 		printf '%s\n' "Your albums ought to equal your cues.  " "" 
 		printf '%s\n' "Are these counts different than expected?  " 
 		printf '%s\n' "	Please inspect the containing folders.  " 
@@ -171,7 +173,7 @@ function main() {
 ## 
 
 ########## 
-#  main  # 
+#  Main  # 
 
 main 
 exit $? 
