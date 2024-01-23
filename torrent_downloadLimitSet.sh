@@ -1,5 +1,5 @@
 #! /usr/bin/env bash 
-# Title   :  torrentDL_limitSet.sh 
+# Title   :  torrent_downloadLimitSet.sh 
 # Parent  :  n/a 
 # Author  :  JamesIsIn 20230422  Do something nice today.  
 
