@@ -1,15 +1,14 @@
 #! /usr/bin/env bash 
 # Title   :  .sh 
 # Parent  :  .sh 
-# Author  :  JamesIsIn 20190918  Do something nice today.  
+# Author  :  JamesIsIn 20200219  Do something nice today.  
 
 # Purpose :   
 # 
-
 ## 
 
-################# 
-#  Definitions  # 
+################## 
+#  Declarations  # 
 
 
 
@@ -35,7 +34,6 @@ function main() {
 #  Main  # 
 
 main 
-
 exit $? 
 
 ## 
