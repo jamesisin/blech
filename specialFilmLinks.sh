@@ -5,7 +5,6 @@
 
 # Purpose :  Find special objects (marked like 🎄) and create sym-links to the respecitve folders (x-mas 🎄).   
 # 
-
 ## 
 
 ################## 
@@ -13,36 +12,39 @@
 
 declare -A AA_targetCharacter 
 	# AA_targetCharacter[]="/" # template 
-	# 
+	# 🪞
+	AA_targetCharacter[🪞]="🪞/" 
 	AA_targetCharacter[✭]="✭/" 
 	AA_targetCharacter[✭✭]="✭✭/" 
 	AA_targetCharacter[👁]="animated 👁/" 
 	AA_targetCharacter[💩]="happy-crappy 💩/" 
-	AA_targetCharacter[🧠]="hero_AI 🧠/" 
-	# AA_targetCharacter[????]="hero_comics ????/" 
-	AA_targetCharacter[℻]="hero_faux-min ℻/" 
-	AA_targetCharacter[☢]="hero_genes ☢/" 
-	AA_targetCharacter[🦸]="hero_super 🦸/" 
+	AA_targetCharacter[🧠]="hero→AI 🧠/" 
+	AA_targetCharacter[🗝]="hero→comics 🗝/" 
+	AA_targetCharacter[℻]="hero→faux-min ℻/" 
+	AA_targetCharacter[☢]="hero→genes ☢/" 
+	AA_targetCharacter[🦸]="hero→super 🦸/" 
 	AA_targetCharacter[🔎]="intrigue 🔎/" 
-	AA_targetCharacter[␠]="lang_ES ␠/" 
-	AA_targetCharacter[⚜]="lang_FR ⚜/" 
-	AA_targetCharacter[🍕]="lang_IT 🍕/" 
+	AA_targetCharacter[␠]="lang→ES ␠/" 
+	AA_targetCharacter[⚜]="lang→FR ⚜/" 
+	AA_targetCharacter[🍕]="lang→IT 🍕/" 
+	AA_targetCharacter[🍣]="lang→JP 🍣/" 
+	AA_targetCharacter[♬]="musica ♬/" 
 	AA_targetCharacter[☠]="post-apocalyptic ☠/" 
 	AA_targetCharacter[🚀]="SpaceGal 🚀/" 
-	AA_targetCharacter[👽]="SpaceGal_firstContact 👽/" 
+	AA_targetCharacter[👽]="SpaceGal→firstContact 👽/" 
 	AA_targetCharacter[⌚]="time ⌚/" 
 	AA_targetCharacter[🧛]="vampires 🧛/" 
 	AA_targetCharacter[🎄]="x-mas 🎄/" 
 	AA_targetCharacter[🧟]="zombies 🧟/" 
 # 
 declare targetSymbol 
-readonly -a const_A_mDLNAroot=( "/media/Works/mDLNA/2watch/" "/media/Works/mDLNA/watched/" "/media/Works/mDLNA/Super/" ) 
+declare prepend 
+readonly -a const_A_mDLNAroot=( "/media/Works/mDLNA/2watch/" "/media/Works/mDLNA/watched/" ) 
 readonly const_specialsRoot="/media/Works/mDLNA/zz_etc/" 
-declare targetSymbol 
 
 # # debugging 
 # 
-# AA_targetCharacter[💩]="happy-crappy 💩/" # this is a small non-null folder and file result-set 
+# AA_targetCharacter[💩]="happy-crappy 💩/" # smallish non-null folder and file result-set 
 # 
 # # 
 
@@ -60,10 +62,17 @@ function func_testRoot() {
 	fi 
 } 
 
+# ToDo:  
+	# one function to locate and remove orphaned links # find . -xtype l #  <--  should find dereferenced links 
+	# one function to remove existing links from array before link creation 
+	# then won't need to remove all links as is current 
+# 
+
 function func_removeOldSoftLinks() { 
 	# find and remove any existing links from the specials hierarchy 
 	# this helps keep the specials directory clear of stale links 
-	find "${const_specialsRoot}" -type l -delete 
+	# find "${const_specialsRoot}" -type l -delete 
+	find "${const_specialsRoot}" -xtype l -delete # this only remove orphans 
 } 
 
 function func_createSoftLinks() { 
@@ -71,12 +80,9 @@ function func_createSoftLinks() {
 	for filePath in "${loc_A_foundFilePaths[@]}" ; do 
 		linkName="$( basename "${filePath}" )" 
 		linkPath="${const_specialsRoot}${AA_targetCharacter[${targetSymbol}]}" 
-		# ln -s "${A_coverList[i]/\/media\/Tunas\/iTuna/'../../..'}" "${const_coverSymLinkFolder}""${loc_linkName}" # from coverLinnks.sh 
-		if [[ -L "${linkPath}${linkName}" ]] ; then 
-			linkNameAug="${linkName/#/'zzWatched'}" 
+		linkNameAug="${linkName/#/${prepend}}" # prevent folder collisions from separate roots 
+		if ! [[ -L "${linkPath}${linkNameAug}" ]] ; then 
 			ln -s "${filePath/\/media\/Works\/mDLNA/'../..'}" "${linkPath}${linkNameAug}" # must use relative links for Samba 
-		else 
-			ln -s "${filePath/\/media\/Works\/mDLNA/'../..'}" "${linkPath}${linkName}" # must use relative links for Samba 
 		fi 
 	done 
 } 
@@ -84,12 +90,15 @@ function func_createSoftLinks() {
 function func_findMarkedObjects() { 
 	# function to find files and load array of files or file paths 
 	local -a loc_A_foundFilePaths 
-	for path in "${const_A_mDLNAroot[@]}" ; do 
-		mapfile -d '' -O"${#loc_A_foundFilePaths[@]}" loc_A_foundFilePaths < <( find "${path}" -name "*${targetSymbol}*" -print0 ) 
-		# mapfile -d '' loc_A_foundFilePaths < <( find /media/Works/mDLNA/watched/ -name "*💩*" -print0 ) # debug example 
-	done 
+	if [[ "$path" == "/media/Works/mDLNA/2watch/" ]] ; then 
+		prepend="2__" 
+	else 
+		prepend="" 
+	fi 
+	mapfile -d '' -O"${#loc_A_foundFilePaths[@]}" loc_A_foundFilePaths < <( find "${path}" -name "*${targetSymbol}*" -print0 ) 
+	# mapfile -d '' loc_A_foundFilePaths < <( find /media/Works/mDLNA/watched/ -name "*💩*" -print0 ) # debug example 
 	# prints "quantity of symbol" 
-	printf '%s' "${#loc_A_foundFilePaths[@]} of ${#loc_A_foundFilePaths[@]} " 
+	printf '%s\n' "${#loc_A_foundFilePaths[@]} of ${#loc_A_foundFilePaths[@]} from ${path}" 
 	# yes line prints a line of that number of those symbols 
 	yes "${targetSymbol}" | head -"${#loc_A_foundFilePaths[@]}" | paste -s -d '' - 
 	export loc_A_foundFilePaths 
@@ -100,7 +109,10 @@ function func_loop_findMarkedObjects() {
 	# loop through AA_targetCharacter calling necessary functions per key-value pair 
 	for targetSymbol in "${!AA_targetCharacter[@]}" ; do 
 		printf '%s\n' "Starting ${targetSymbol}.  " 
-		func_findMarkedObjects 
+		for path in "${const_A_mDLNAroot[@]}" ; do 
+			export path 
+			func_findMarkedObjects 
+		done 
 		printf '%s\n' "${targetSymbol} completed.  " 
 	done 
 } 
@@ -119,7 +131,6 @@ function main() {
 #  Main  # 
 
 main 
-
 exit $? 
 
 ## 
