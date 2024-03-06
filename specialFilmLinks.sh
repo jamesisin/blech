@@ -62,17 +62,11 @@ function func_testRoot() {
 	fi 
 } 
 
-# ToDo:  
-	# one function to locate and remove orphaned links # find . -xtype l #  <--  should find dereferenced links 
-	# one function to remove existing links from array before link creation 
-	# then won't need to remove all links as is current 
-# 
-
 function func_removeOldSoftLinks() { 
 	# find and remove any existing links from the specials hierarchy 
 	# this helps keep the specials directory clear of stale links 
 	# find "${const_specialsRoot}" -type l -delete 
-	find "${const_specialsRoot}" -xtype l -delete # this only remove orphans 
+	find "${const_specialsRoot}" -xtype l -delete # this only removes orphans 
 } 
 
 function func_createSoftLinks() { 
