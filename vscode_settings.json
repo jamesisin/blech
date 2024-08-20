@@ -1,0 +1,39 @@
+{ 
+	// 
+	// all machines 
+	// 
+	// 20180108 word wrapping on 
+	"editor.wordWrap": "on", 
+	// 20180501 kill preview mode for opening files 
+	"workbench.editor.enablePreview": false, 
+	// 20180615 show spaces and so forth 
+	"editor.renderWhitespace": "all", 
+	"editor.renderControlCharacters": false, 
+	// 20180615 enable breadcrums for file path 
+	"breadcrumbs.enabled": true, 
+	// 20200719 force this json as Settings editor 
+	"workbench.settings.editor": "json", 
+	// 
+	// 
+	// this machine only 
+	// 
+	// 20200719 adjust zoom level according to current monitor resolution 
+	"window.zoomLevel": -1, 
+	// default to tabs indentation 
+	"editor.insertSpaces": false, 
+	// 20200719 change tracking exclusions 
+	"files.watcherExclude": { 
+		"**/.git/objects/**": true, 
+		"**/.git/subtree-cache/**": true, 
+		"**/node_modules/*/**": true, 
+		"/home/jamesisin/Documents/ingit/AboutAJob/*/**": true, 
+		"/home/jamesisin/Documents/ingit/BFG/BFG_CFEngine_under_configs_svn/*/**": true 
+	}, 
+	// 
+	"files.associations": { 
+		"cmath": "cpp", 
+		"cstdlib": "cpp", 
+		"iostream": "cpp" 
+	} 
+	//
+} 
