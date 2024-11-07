@@ -1,6 +1,6 @@
 #! /usr/bin/env bash 
 # Title  :  splitFLAC.sh 
-# Author :  JamesIsIn 20191121  Do something nice today.  
+# Author :  JamesIsIn 20191121  Do something kind today.  
 
 # Purpose:  Convert FLAC albums to FLAC tracks recursively.  
 #           This script has dependnecies:  cuetools shntool 
@@ -176,6 +176,6 @@ function main() {
 #  Main  # 
 
 main 
-exit $? 
+exit ${?} 
 
 ## 
