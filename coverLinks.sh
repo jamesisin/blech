@@ -1,7 +1,7 @@
 #! /usr/bin/env bash 
 # Title   :  coverLinks.sh 
 # Parent  :  NONE 
-# Author  :  JamesIsIn 20190918  Do something nice today.  
+# Author  :  JamesIsIn 20190918  Do something kind today.  
 
 # Purpose :  Create soft links to every cover image in the collection into one folder.  
 # 			 Exclude images demarked as poor quality.  
