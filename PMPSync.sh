@@ -1,7 +1,7 @@
 #! /usr/bin/env bash 
 # Title  :  PMPSync.sh 
 # Parent :  NONE 
-# Author :  JamesIsIn 20240104 Do something nice today.  
+# Author :  JamesIsIn 20240104 Do something kind today.  
 
 # Purpose:  Synchronize tracks from Library to PMP per playlists.  
 # 
