@@ -2,7 +2,7 @@
 # if running python2 and need utf-8 printing add:  # -*- coding: utf-8 -*- 
 # Title   :  .py 
 # Parent  :  none 
-# Author  :  JamesIsIn 20190407 Do something nice today. 
+# Author  :  JamesIsIn 20190407 Do something kind today. 
 
 # Purpose :   
 # 
