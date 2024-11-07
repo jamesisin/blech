@@ -1,7 +1,7 @@
 #! /usr/bin/env bash 
 # Title   :  torrent_endMove.sh 
 # Parent  :  n/a 
-# Author  :  JamesIsIn 20230420  Do something nice today.  
+# Author  :  JamesIsIn 20230420  Do something kind today.  
 
 # Purpose :  When a torrent compeletes, move it.   
 # 			To be run by Transmission automatically (though can be run manually).  
@@ -101,6 +101,6 @@ function main() {
 #  Main  # 
 
 main 
-exit $? 
+exit ${?} 
 
 ## 
