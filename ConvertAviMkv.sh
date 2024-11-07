@@ -1,6 +1,6 @@
 #! /usr/bin/env bash 
 # Title   :  ConvertAviMkv.sh 
-# Author  :  JamesIsIn 20201015  Do something nice today.  
+# Author  :  JamesIsIn 20201015  Do something kind today.  
 
 # Purpose :  Recursively convert AVI files to MKV files.   
 # 
