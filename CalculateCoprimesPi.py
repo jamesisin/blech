@@ -1,7 +1,7 @@
 #!/usr/bin/env python3 
 # Title   :  CalculateCoprimesPi.py 
 # Parent  :  none 
-# Author  :  JamesIsIn 20190407 Do something nice today. 
+# Author  :  JamesIsIn 20190407 Do something kind today. 
 
 # Purpose :  Calculate coprimes of pi like https://www.youtube.com/watch?v=RZBhSi_PwHU 
 # 
