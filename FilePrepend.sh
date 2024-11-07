@@ -1,7 +1,7 @@
 #! /usr/bin/env bash 
 # Title   :  filePrepend.sh 
 # Parent  :  NONE 
-# Author  :  JamesIsIn 20200207  Do something nice today.  
+# Author  :  JamesIsIn 20200207  Do something kind today.  
 
 # Purpose :  Prepend a string to selected files.  
 # 
