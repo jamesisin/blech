@@ -1,7 +1,7 @@
 #!/usr/bin/env python3 
 # Title   :  RenameWithSubstitution.py 
 # Parent  :  none 
-# Author  :  JamesIsIn 20190407 Do something nice today. 
+# Author  :  JamesIsIn 20190407 Do something kind today. 
 
 # Purpose :  Rename files by changing page numbers.  
 # 
