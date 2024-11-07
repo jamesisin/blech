@@ -1,7 +1,7 @@
 #! /usr/bin/env bash 
 # Title   :  naughtyFSSyncFixTool.sh 
 # Parent  :  n/a 
-# Author  :  JamesIsIn 20221125  Do something nice today.  
+# Author  :  JamesIsIn 20221125  Do something kind today.  
 
 # Purpose : naughtyFSSyncFixTool.sh will substitute a set of obvious insertions into file names in a file hierarchy with the intention to then sync 
 # 			or move those renamed files onto a file system hindered by the kernel limitations of Windows (especially FAT and NTFS).  
