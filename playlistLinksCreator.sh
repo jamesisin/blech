@@ -1,7 +1,7 @@
 #! /usr/bin/env bash 
 # Title   :  playlistLinksCreator.sh 
 # Parent  :  N/A 
-# Author  :  JamesIsIn 20200705  Do something nice today.  
+# Author  :  JamesIsIn 20200705  Do something kind today.  
 
 # Purpose :   
 # Create hard links in a folder named after a playlist of each file called in the playlist.  
