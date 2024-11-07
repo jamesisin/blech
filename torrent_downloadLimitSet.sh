@@ -1,7 +1,7 @@
 #! /usr/bin/env bash 
 # Title   :  torrent_downloadLimitSet.sh 
 # Parent  :  n/a 
-# Author  :  JamesIsIn 20230422  Do something nice today.  
+# Author  :  JamesIsIn 20230422  Do something kind today.  
 
 # Purpose :  Limit download speed on all incomplete torrents.   
 # 			Only needs user:password if running this script remotely (not via 127.0.0.1) 
@@ -67,6 +67,6 @@ function main() {
 #  Main  # 
 
 main 
-exit $? 
+exit ${?} 
 
 ## 
