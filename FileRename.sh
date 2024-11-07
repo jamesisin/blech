@@ -122,6 +122,6 @@ function main() {
 #  Main  # 
 
 main 
-exit $? 
+exit ${?} 
 
 ## 
