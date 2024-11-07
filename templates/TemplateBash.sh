@@ -13,7 +13,7 @@
 
 
 # # debugging 
-# 
+# set -x 
 # # 
 
 ## 
@@ -25,7 +25,8 @@
 
 function main() { 
 	# 
-	unset 
+	: 
+ 	# set +x 
 } 
 
 ## 
@@ -33,7 +34,7 @@ function main() {
 ########## 
 #  Main  # 
 
-main 
-exit $? 
+main # "${@}" 
+exit ${?} 
 
 ## 
