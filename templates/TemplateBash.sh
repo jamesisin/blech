@@ -35,6 +35,6 @@ function main() {
 #  Main  # 
 
 main # "${@}" 
-exit ${s} 
+exit ${?} 
 
 ## 
