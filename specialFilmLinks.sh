@@ -10,6 +10,11 @@
 ################## 
 #  Declarations  # 
 
+# # debugging 
+# AA_targetCharacter[💩]="happy-crappy 💩/" # smallish non-null folder and file result-set 
+# set -x 
+# # 
+
 declare -A AA_targetCharacter 
 	# AA_targetCharacter[]="/" # template 
 	# 🪞 # process this as 2watch only (thus exclude 2_ prepend) 
@@ -17,6 +22,9 @@ declare -A AA_targetCharacter
 	AA_targetCharacter[✭]="✭/" 
 	AA_targetCharacter[✭✭]="✭✭/" 
 	AA_targetCharacter[👁]="animated 👁/" 
+	AA_targetCharacter[😊]="comedy 😊/" 
+	AA_targetCharacter[Ⓑ]="doc→biopic Ⓑ/" 
+	AA_targetCharacter[Ⓓ]="doc→documentary Ⓓ/" 
 	AA_targetCharacter[⏻]="dystopian ⏻/" 
 	AA_targetCharacter[💩]="happy-crappy 💩/" 
 	AA_targetCharacter[🧠]="hero→AI 🧠/" 
@@ -25,6 +33,9 @@ declare -A AA_targetCharacter
 	AA_targetCharacter[℻]="hero→faux-min ℻/" 
 	AA_targetCharacter[☢]="hero→genes ☢/" 
 	AA_targetCharacter[🦸]="hero→super 🦸/" 
+	AA_targetCharacter[🤡]="horror 🤡/" 
+	AA_targetCharacter[🧛]="horror→vampires 🧛/" 
+	AA_targetCharacter[🧟]="horror→zombies 🧟/" 
 	AA_targetCharacter[🔎]="intrigue 🔎/" 
 	AA_targetCharacter[␠]="lang→ES ␠/" 
 	AA_targetCharacter[⚜]="lang→FR ⚜/" 
@@ -32,23 +43,17 @@ declare -A AA_targetCharacter
 	AA_targetCharacter[🍣]="lang→JE 🍣/" 
 	AA_targetCharacter[♬]="musica ♬/" 
 	AA_targetCharacter[☠]="post-apocalyptic ☠/" 
+	AA_targetCharacter[♡]="rom ♡/" 
+	AA_targetCharacter[🔬]="sci-fi 🔬/" 
 	AA_targetCharacter[🚀]="SpaceGal 🚀/" 
 	AA_targetCharacter[👽]="SpaceGal→firstContact 👽/" 
 	AA_targetCharacter[⌚]="time ⌚/" 
-	AA_targetCharacter[🧛]="vampires 🧛/" 
 	AA_targetCharacter[🎄]="x-mas 🎄/" 
-	AA_targetCharacter[🧟]="zombies 🧟/" 
 # 
 declare targetSymbol 
 declare prepend 
-readonly -a const_A_mDLNAroot=( "/media/Works/mDLNA/2watch/" "/media/Works/mDLNA/watched/" ) 
+readonly -a const_A_mDLNAroot=( "/media/Works/mDLNA/2watch/" "/media/Works/mDLNA/aA-zZ/" "/media/Works/mDLNA/aA-zZ [episodic]/" ) 
 readonly const_specialsRoot="/media/Works/mDLNA/zz_etc/" 
-
-# # debugging 
-# 
-# AA_targetCharacter[💩]="happy-crappy 💩/" # smallish non-null folder and file result-set 
-# 
-# # 
 
 ## 
 
@@ -78,7 +83,11 @@ function func_createSoftLinks() {
 		linkPath="${const_specialsRoot}${AA_targetCharacter[${targetSymbol}]}" 
 		linkNameAug="${linkName/#/${prepend}}" # prevent folder collisions from separate roots 
 		if ! [[ -L "${linkPath}${linkNameAug}" ]] ; then 
-			ln -s "${filePath/\/media\/Works\/mDLNA/'../..'}" "${linkPath}${linkNameAug}" # must use relative links for Samba 
+			if [[ "${targetSymbol}" = "✭" ]] && [[ "${linkNameAug}" = *"✭✭"* ]] ; then 
+				: # don't add two star items to single star folder 
+			else 
+				ln -s "${filePath/\/media\/Works\/mDLNA/'../..'}" "${linkPath}${linkNameAug}" # must use relative links for Samba 
+			fi 
 		fi 
 	done 
 } 
@@ -86,6 +95,11 @@ function func_createSoftLinks() {
 function func_findMarkedObjects() { 
 	# function to find files and load array of files or file paths 
 	local -a loc_A_foundFilePaths 
+	if [[ "${path}" == "/media/Works/mDLNA/2watch/" ]] && [[ "${targetSymbol}" = "✭" ]] ; then 
+		return 0 
+	elif [[ "${path}" == "/media/Works/mDLNA/2watch/" ]] && [[ "${targetSymbol}" = "✭✭" ]] ; then 
+		return 0 
+	fi 
 	unset prepend 
 	if [[ "${path}" == "/media/Works/mDLNA/2watch/" ]] && [[ "${targetSymbol}" != "🪞" ]] ; then 
 		prepend="2__" 
