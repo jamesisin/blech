@@ -21,12 +21,16 @@ declare -A AA_targetCharacter
 	AA_targetCharacter[🪞]="🪞/" 
 	AA_targetCharacter[✭]="✭/" 
 	AA_targetCharacter[✭✭]="✭✭/" 
+	AA_targetCharacter[🥋]="action 🥋/" 
 	AA_targetCharacter[👁]="animated 👁/" 
 	AA_targetCharacter[😊]="comedy 😊/" 
+	AA_targetCharacter[😎]="comedy→dark 😎/" 
 	AA_targetCharacter[Ⓑ]="doc→biopic Ⓑ/" 
 	AA_targetCharacter[Ⓓ]="doc→documentary Ⓓ/" 
 	AA_targetCharacter[⏻]="dystopian ⏻/" 
+	AA_targetCharacter[🎞]="filmcraft 🎞/" 
 	AA_targetCharacter[💩]="happy-crappy 💩/" 
+	AA_targetCharacter[🔓]="heist 🔓/" 
 	AA_targetCharacter[🧠]="hero→AI 🧠/" 
 	AA_targetCharacter[☣]="hero→bio ☣/" 
 	AA_targetCharacter[🗝]="hero→comics 🗝/" 
@@ -40,14 +44,19 @@ declare -A AA_targetCharacter
 	AA_targetCharacter[␠]="lang→ES ␠/" 
 	AA_targetCharacter[⚜]="lang→FR ⚜/" 
 	AA_targetCharacter[🍕]="lang→IT 🍕/" 
-	AA_targetCharacter[🍣]="lang→JE 🍣/" 
+	AA_targetCharacter[🍣]="lang→JA 🍣/" 
+	AA_targetCharacter[🧙]="magic 🧙/" 
 	AA_targetCharacter[♬]="musica ♬/" 
 	AA_targetCharacter[☠]="post-apocalyptic ☠/" 
 	AA_targetCharacter[♡]="rom ♡/" 
 	AA_targetCharacter[🔬]="sci-fi 🔬/" 
+	AA_targetCharacter[🎮]="source→game 🎮/" 
 	AA_targetCharacter[🚀]="SpaceGal 🚀/" 
 	AA_targetCharacter[👽]="SpaceGal→firstContact 👽/" 
+	AA_targetCharacter[ⓢ]="sport ⚽ 🥊 🏈 ⚾ 🏉 🤼/" 
 	AA_targetCharacter[⌚]="time ⌚/" 
+	AA_targetCharacter[🔫]="war 🔫/" 
+	AA_targetCharacter[🤠]="western 🤠/" 
 	AA_targetCharacter[🎄]="x-mas 🎄/" 
 # 
 declare targetSymbol 
@@ -78,15 +87,20 @@ function func_removeOldSoftLinks() {
 
 function func_createSoftLinks() { 
 	# create soft links in the target directory based on the found objects array 
+	local loc_linkPath
 	for filePath in "${loc_A_foundFilePaths[@]}" ; do 
 		linkName="$( basename "${filePath}" )" 
-		linkPath="${const_specialsRoot}${AA_targetCharacter[${targetSymbol}]}" 
+		if [ -n "${targetIsSport}" ] ; then 
+			loc_linkPath="${const_specialsRoot}${AA_targetCharacter[ⓢ]}" 
+		else 
+			loc_linkPath="${const_specialsRoot}${AA_targetCharacter[${targetSymbol}]}" 
+		fi 
 		linkNameAug="${linkName/#/${prepend}}" # prevent folder collisions from separate roots 
-		if ! [[ -L "${linkPath}${linkNameAug}" ]] ; then 
+		if ! [[ -L "${loc_linkPath}${linkNameAug}" ]] ; then 
 			if [[ "${targetSymbol}" = "✭" ]] && [[ "${linkNameAug}" = *"✭✭"* ]] ; then 
 				: # don't add two star items to single star folder 
 			else 
-				ln -s "${filePath/\/media\/Works\/mDLNA/'../..'}" "${linkPath}${linkNameAug}" # must use relative links for Samba 
+				ln -s "${filePath/\/media\/Works\/mDLNA/'../..'}" "${loc_linkPath}${linkNameAug}" # must use relative links for Samba 
 			fi 
 		fi 
 	done 
@@ -102,7 +116,7 @@ function func_findMarkedObjects() {
 	fi 
 	unset prepend 
 	if [[ "${path}" == "/media/Works/mDLNA/2watch/" ]] && [[ "${targetSymbol}" != "🪞" ]] ; then 
-		prepend="2__" 
+		prepend="₂__" 
 	fi 
 	mapfile -d '' -O"${#loc_A_foundFilePaths[@]}" loc_A_foundFilePaths < <( find "${path}" -name "*${targetSymbol}*" -print0 ) 
 	# mapfile -d '' loc_A_foundFilePaths < <( find /media/Works/mDLNA/watched/ -name "*💩*" -print0 ) # debug example 
@@ -120,7 +134,17 @@ function func_loop_findMarkedObjects() {
 		printf '%s\n' "Starting ${targetSymbol}.  " 
 		for path in "${const_A_mDLNAroot[@]}" ; do 
 			export path 
-			func_findMarkedObjects 
+			if [ "${targetSymbol}" = ⓢ ] ; then 
+				# since sport has multiple symbols we must alter ${targetSymbol} for each sport 
+				# yes, this inner for-loop intentionally replaces the iterator 
+				for targetIsSport in ${AA_targetCharacter[ⓢ]/sport /} ; do 
+					targetSymbol="${targetIsSport/\//}" 
+					func_findMarkedObjects 
+				done 
+				unset targetIsSport  
+			else 
+				func_findMarkedObjects 
+			fi 
 		done 
 		printf '%s\n' "${targetSymbol} completed.  " "" 
 	done 
