@@ -4,7 +4,7 @@
 # Author  :  JamesIsIn 20200705  Do something kind today.  
 
 # Purpose :   
-# Create hard links in a folder named after a playlist of each file called in the playlist.  
+# Create hard links in a folder named after a playlist of each file called in the playlist (m3u).  
 
 ## 
 
@@ -17,7 +17,7 @@ declare directory_MixedTapes_destination
 declare directory_MixedTape_new 
 declare -a A_playlistPaths_full 
 declare directory_MixedTape_fullPath 
-readonly const_PoP_path="/home/princeofparties/Music" 
+readonly const_PoP_path="/home/user/Music" 
 readonly const_Tuna_path="/media/Tunas" 
 
 # # debugging 
@@ -57,7 +57,7 @@ function func_getDirectories() {
 function func_getPlaylistFile() { 
 	# obtain directory in which to work 
 	printf '%s\n' "	→	Playlist:  " 
-	read -rep "Please provide the path to the playlist to use to create a MixedTape folder:  " -i "${playlistPath}" playlistPath 
+	read -rep "Please provide the path to the playlist (m3u) to use to create a MixedTape folder:  " -i "${playlistPath}" playlistPath 
 	# expand the ~/ if it gets submitted 
 	playlistPath="${playlistPath/#~/${HOME}}" 
 	# fix spaces to be used in a quoted variable 
@@ -162,7 +162,7 @@ function func_MixedTapesDestination_CreateLinks() {
 } 
 
 function func_MixedTapesDestination_CreateLinks_Loop() { 
-	# TODO:  add error deteciton for link creation 
+	# ToDo:  add error deteciton for link creation 
 	func_MixedTapesDestination_CreateLinks
 } 
 
@@ -171,7 +171,7 @@ function func_fixPoPpathProblem() {
 	for (( i = 0 ; i < ${#A_playlistPaths_full[@]} ; i++ )) ; do 
 		A_playlistPaths_full[${i}]="${A_playlistPaths_full[${i}]//${const_PoP_path}/${const_Tuna_path}}" 
 	done 
-	# TODO:  add user input for these variables 
+	# ToDo:  add user input for these variables 
 } 
 
 function main() { 
