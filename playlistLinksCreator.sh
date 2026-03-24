@@ -17,7 +17,7 @@ declare directory_MixedTapes_destination
 declare directory_MixedTape_new 
 declare -a A_playlistPaths_full 
 declare directory_MixedTape_fullPath 
-readonly const_PoP_path="/home/user/Music" 
+readonly const_PoP_path="/home/princeofparties/Music" 
 readonly const_Tuna_path="/media/Tunas" 
 
 # # debugging 
@@ -78,7 +78,7 @@ function func_getPlaylistFile_Loop() {
 } 
 
 function func_getMixedTapesDestination() { 
-	printf '%s\n' "	→	PMP Root:  " 
+	printf '%s\n' "	→	MixedTape root or sub-directory:  " 
 	read -rep "Please provide the directory where this MixedTape folder will live:  " -i "${directory_MixedTapes_destination}" directory_MixedTapes_destination 
 	# expand the ~/ if it gets submitted 
 	directory_MixedTapes_destination="${directory_MixedTapes_destination/#~/${HOME}}" 
