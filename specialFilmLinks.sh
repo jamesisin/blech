@@ -7,6 +7,9 @@
 # 
 ## 
 
+##  ToDo:  
+# 			fix sport output; see script output for additional data 
+
 ################## 
 #  Declarations  # 
 
@@ -17,8 +20,7 @@
 
 declare -A AA_targetCharacter 
 	# AA_targetCharacter[]="/" # template 
-	# 🪞 # process this as 2watch only (thus exclude 2_ prepend) 
-	AA_targetCharacter[🪞]="🪞/" 
+	AA_targetCharacter[🪞]="🪞/" # 🪞 # process this as 2watch only (thus exclude 2_ prepend) 
 	AA_targetCharacter[✭]="✭/" 
 	AA_targetCharacter[✭✭]="✭✭/" 
 	AA_targetCharacter[🥋]="action 🥋/" 
@@ -53,7 +55,7 @@ declare -A AA_targetCharacter
 	AA_targetCharacter[🎮]="source→game 🎮/" 
 	AA_targetCharacter[🚀]="SpaceGal 🚀/" 
 	AA_targetCharacter[👽]="SpaceGal→firstContact 👽/" 
-	AA_targetCharacter[ⓢ]="sport ⚽ 🥊 🏈 ⚾ 🏉 🤼/" 
+	AA_targetCharacter[ⓢ]="sport ⚽ 🥊 🏈 ⚾ 🏉 🤼/" # this is not working perfectly; see script output 
 	AA_targetCharacter[⌚]="time ⌚/" 
 	AA_targetCharacter[🔫]="war 🔫/" 
 	AA_targetCharacter[🤠]="western 🤠/" 
@@ -87,7 +89,8 @@ function func_removeOldSoftLinks() {
 
 function func_createSoftLinks() { 
 	# create soft links in the target directory based on the found objects array 
-	local loc_linkPath
+	local loc_linkPath loc_iterator loc_printASymbol
+		loc_iterator="1" 
 	for filePath in "${loc_A_foundFilePaths[@]}" ; do 
 		linkName="$( basename "${filePath}" )" 
 		if [ -n "${targetIsSport}" ] ; then 
@@ -97,12 +100,19 @@ function func_createSoftLinks() {
 		fi 
 		linkNameAug="${linkName/#/${prepend}}" # prevent folder collisions from separate roots 
 		if ! [[ -L "${loc_linkPath}${linkNameAug}" ]] ; then 
+			loc_printASymbol="yes" 
 			if [[ "${targetSymbol}" = "✭" ]] && [[ "${linkNameAug}" = *"✭✭"* ]] ; then 
 				: # don't add two star items to single star folder 
 			else 
 				ln -s "${filePath/\/media\/Works\/mDLNA/'../..'}" "${loc_linkPath}${linkNameAug}" # must use relative links for Samba 
+				# these next lines replace yes line from func_findMarkedObjects, even if less cool and harder to code 
+				printf '%s' "${targetSymbol}" 
 			fi 
 		fi 
+		if [[ "${loc_iterator}" = "${#loc_A_foundFilePaths[@]}" ]] && [[ "${loc_printASymbol}" = "yes" ]] ; then 
+			printf '\n' # only print a newline if you actually create new links; ensures printf '%s' "${targetSymbol}" above is on its own line 
+		fi 
+		loc_iterator=$(( loc_iterator + 1 )) 
 	done 
 } 
 
@@ -110,28 +120,28 @@ function func_findMarkedObjects() {
 	# function to find files and load array of files or file paths 
 	local -a loc_A_foundFilePaths 
 	if [[ "${path}" == "/media/Works/mDLNA/2watch/" ]] && [[ "${targetSymbol}" = "✭" ]] ; then 
-		return 0 
+		return 0 # if it hasn't been watched then it can't be rated yet 
 	elif [[ "${path}" == "/media/Works/mDLNA/2watch/" ]] && [[ "${targetSymbol}" = "✭✭" ]] ; then 
-		return 0 
+		return 0 # if it hasn't been watched then it can't be rated yet 
 	fi 
 	unset prepend 
 	if [[ "${path}" == "/media/Works/mDLNA/2watch/" ]] && [[ "${targetSymbol}" != "🪞" ]] ; then 
-		prepend="₂__" 
+		prepend="₂__" # mark links to indicate they are from 2watch unless they have the mirror symbol which is only in 2watch 
 	fi 
 	mapfile -d '' -O"${#loc_A_foundFilePaths[@]}" loc_A_foundFilePaths < <( find "${path}" -name "*${targetSymbol}*" -print0 ) 
 	# mapfile -d '' loc_A_foundFilePaths < <( find /media/Works/mDLNA/watched/ -name "*💩*" -print0 ) # debug example 
 	# prints "quantity of symbol" 
-	printf '%s\n' "	${#loc_A_foundFilePaths[@]} of ${targetSymbol} from ${path}" 
-	# yes line prints a line of that number of those symbols 
-	yes "${targetSymbol}" | head -"${#loc_A_foundFilePaths[@]}" | paste -s -d '' - 
-	export loc_A_foundFilePaths 
+	printf '%s\n' "	${#loc_A_foundFilePaths[@]}	of ${targetSymbol}	in ${path}" 
+	# yes line prints a line of that quantity of those symbols 
+	# yes "${targetSymbol}" | head -"${#loc_A_foundFilePaths[@]}" | paste -s -d '' - # moved to func_createSoftLinks 
+	export loc_A_foundFilePaths targetSymbol 
 	func_createSoftLinks 
 } 
 
 function func_loop_findMarkedObjects() { 
 	# loop through AA_targetCharacter calling necessary functions per key-value pair 
 	for targetSymbol in "${!AA_targetCharacter[@]}" ; do 
-		printf '%s\n' "Starting ${targetSymbol}.  " 
+		printf '%s\n' "Start ${targetSymbol} " 
 		for path in "${const_A_mDLNAroot[@]}" ; do 
 			export path 
 			if [ "${targetSymbol}" = ⓢ ] ; then 
@@ -141,12 +151,13 @@ function func_loop_findMarkedObjects() {
 					targetSymbol="${targetIsSport/\//}" 
 					func_findMarkedObjects 
 				done 
-				unset targetIsSport  
+				unset targetIsSport 
+				targetSymbol="ⓢ" 
 			else 
 				func_findMarkedObjects 
 			fi 
 		done 
-		printf '%s\n' "${targetSymbol} completed.  " "" 
+		printf '%s\n' "End ${targetSymbol} " "" 
 	done 
 } 
 
