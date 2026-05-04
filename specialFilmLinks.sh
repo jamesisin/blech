@@ -100,12 +100,12 @@ function func_createSoftLinks() {
 		fi 
 		linkNameAug="${linkName/#/${prepend}}" # prevent folder collisions from separate roots 
 		if ! [[ -L "${loc_linkPath}${linkNameAug}" ]] ; then 
-			loc_printASymbol="yes" 
 			if [[ "${targetSymbol}" = "✭" ]] && [[ "${linkNameAug}" = *"✭✭"* ]] ; then 
 				: # don't add two star items to single star folder 
 			else 
 				ln -s "${filePath/\/media\/Works\/mDLNA/'../..'}" "${loc_linkPath}${linkNameAug}" # must use relative links for Samba 
 				# these next lines replace yes line from func_findMarkedObjects, even if less cool and harder to code 
+				loc_printASymbol="yes" 
 				printf '%s' "${targetSymbol}" 
 			fi 
 		fi 
